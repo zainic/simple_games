@@ -1,6 +1,10 @@
 class Playground:
   """Create area to play the game"""
-  pass
+  def __init__(self, width, height, style):
+    """Set width, height, and style"""
+    self.width = width
+    self.height = height
+    self.style = style
 
 class Snake(Playground):
   """Create snake and snake's movement"""
