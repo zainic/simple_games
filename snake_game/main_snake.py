@@ -27,6 +27,17 @@ class Playground:
         background.append(col)
     self.background = np.array(background)
   
+  def coordinates(self):
+    """Create coordinates to every square"""
+    self.coords = {}
+    self.inv_coords = {}
+    x_coords = np.arange(7, 16 * self.width, 16)
+    y_coords = np.arange(7, 16 * self.height, 16)
+    for y, y_coord in enumerate(y_coords):
+      for x, x_coord in enumerate(x_coords):
+        self.coords[(x,y)] = (x_coord, y_coord)
+        self.inv_coords[(x_coord,y_coord)] = (x, y)
+    
 class Snake(Playground):
   """Create snake and snake's movement"""
   pass
