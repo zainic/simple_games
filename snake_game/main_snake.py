@@ -26,7 +26,8 @@ class Playground:
       for col in row_background:
         background.append(col)
     background = np.array(background)
-
+    return background
+  
 class Snake(Playground):
   """Create snake and snake's movement"""
   pass
