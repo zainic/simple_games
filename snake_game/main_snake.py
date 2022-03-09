@@ -37,10 +37,15 @@ class Playground:
       for x, x_coord in enumerate(x_coords):
         self.coords[(x,y)] = (x_coord, y_coord)
         self.inv_coords[(x_coord,y_coord)] = (x, y)
-    
+  
 class Snake(Playground):
   """Create snake and snake's movement"""
-  pass
+  def snake_texture(self):
+    """Import snake texture from directory to dictionary"""
+    self.snake = {}
+    self.snake["body_1"] = cv2.imread("snake_texture/" + self.style + "/body_1.png")
+    self.snake["body_2"] = cv2.imread("snake_texture/" + self.style + "/body_2.png")
+    self.snake["head"] = cv2.imread("snake_texture/" + self.style + "/head.png")
 
 class Food(Playground):
   """Create food for snake to grow""" 
