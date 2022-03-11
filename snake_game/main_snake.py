@@ -96,6 +96,33 @@ class Snake(Playground):
       elif press == ord("d"):
         self.direction_vector = RIGHT
     
+  def initial_position(self):
+    """Set initial position of the snake"""
+    self.snake_texture()
+    self.head = self.list_pos[-1]
+    self.body = self.list_pos[:-1]
+    # Body snake
+    n = 1
+    for pos in self.body:
+      pos_index = self.list_pos.index(pos)
+      after_pos = self.list_pos[pos_index + 1]
+      for sub_pos in range(0, 15, 2):
+        real_coords = self.coords[pos]
+        sub = np.multiply(np.add(after_pos, np.negative(pos)), sub_pos)
+        for i, x in enumerate(self.snake["body_" + str(n % 2 + 1)]):
+          for j, x1 in enumerate(x):
+            if x1[0] == 255 and x1[1] == 255 and x1[2] == 255:
+              continue
+            self.background[real_coords[1] - 7 + i + sub[1]][real_coords[0] - 7 + j + sub[0]] = x1
+            n += 1
+    # Head snake
+    real_coords = self.coords[self.head]
+    for i, x in enumerate(self.snake["head"]):
+      for j, x1 in enumerate(x):
+        if x1[0] == 255 and x1[1] == 255 and x1[2] == 255:
+          continue
+        self.background[real_coords[1] - 7 + i][real_coords[0] - 7 + j] = x1
+        
 class Food(Playground):
   """Create food for snake to grow""" 
   pass
