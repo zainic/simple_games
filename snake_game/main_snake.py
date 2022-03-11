@@ -130,7 +130,10 @@ class Food(Playground):
 
      
 def main():
-  snake_game = Snake(int(sys.argv[1]), int(sys.argv[2]), sys.argv[3])
+  try:
+    snake_game = Snake(int(sys.argv[1]), int(sys.argv[2]), sys.argv[3])
+  except IndexError:
+    raise AssertionError("Need exactly 3 input (width, height, style)")
   snake_game.initial_position()
   cv2.imshow("Snake Game", snake_game.background)
   cv2.waitKey(0)
