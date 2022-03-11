@@ -44,8 +44,10 @@ class Playground:
 class Snake(Playground):
   """Create snake and snake's movement"""
   def __init__(self):
+    """Initialize snake position and direction of snake"""
     self.list_pos = [(self.width//2 - 1, self.height//2 - 1),(self.width//2 - 2, self.height//2 - 1)]
     self.coordinates()
+    self.movement_vector = [0,1]
   
   def snake_texture(self):
     """Import snake texture from directory to dictionary"""
