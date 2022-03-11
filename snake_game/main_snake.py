@@ -29,6 +29,7 @@ class Playground:
   
   def coordinates(self):
     """Create coordinates to every square"""
+    self.background_style()
     self.coords = {}
     self.inv_coords = {}
     x_coords = np.arange(7, 16 * self.width, 16)
@@ -40,6 +41,10 @@ class Playground:
   
 class Snake(Playground):
   """Create snake and snake's movement"""
+  def __init__(self):
+    self.list_pos = [(self.width//2 - 1, self.height//2 - 1),(self.width//2 - 2, self.height//2 - 1)]
+    self.coordinates()
+  
   def snake_texture(self):
     """Import snake texture from directory to dictionary"""
     self.snake = {}
