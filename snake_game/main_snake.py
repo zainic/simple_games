@@ -2,6 +2,11 @@ from logging import raiseExceptions
 import numpy as np
 import cv2
 
+UP = [-1, 0]
+DOWN = [1, 0]
+LEFT = [0, -1]
+RIGHT = [0, 1]
+
 class Playground:
   """Create area to play the game"""
   def __init__(self, width, height, style):
@@ -47,7 +52,7 @@ class Snake(Playground):
     """Initialize snake position and direction of snake"""
     self.list_pos = [(self.width//2 - 1, self.height//2 - 1),(self.width//2 - 2, self.height//2 - 1)]
     self.coordinates()
-    self.movement_vector = [0,1]
+    self.direction_vector = [0,1]
   
   def snake_texture(self):
     """Import snake texture from directory to dictionary"""
