@@ -61,6 +61,40 @@ class Snake(Playground):
     self.snake["body_2"] = cv2.imread("snake_texture/" + self.style + "/body_2.png")
     self.snake["head"] = cv2.imread("snake_texture/" + self.style + "/head.png")
 
+  def update_direction(self):
+    """
+    Update direction of the snake with user input
+    w => UP
+    a => DOWN
+    d => RIGHT
+    a => LEFT
+    """
+    press = cv2.waitKey(10) & 0xff
+    """
+    Note : Snake can't go backward
+    ex : if the current snake direction is UP, player can't input DOWN ("s")
+    """
+    if self.direction_vector[0] == 0 and self.direction_vector[1] == 1:
+      if press == ord("w"):
+        self.direction_vector = UP
+      elif press == ord("s"):
+        self.direction_vector = DOWN
+    elif self.direction_vector[0] == 0 and self.direction_vector[1] == -1:
+      if press == ord("w"):
+        self.direction_vector = UP
+      elif press == ord("s"):
+        self.direction_vector = DOWN
+    elif self.direction_vector[0] == 1 and self.direction_vector[1] == 0:
+      if press == ord("a"):
+        self.direction_vector = LEFT
+      elif press == ord("d"):
+        self.direction_vector = RIGHT
+    elif self.direction_vector[0] == -1 and self.direction_vector[1] == 0:
+      if press == ord("a"):
+        self.direction_vector = LEFT
+      elif press == ord("d"):
+        self.direction_vector = RIGHT
+    
 class Food(Playground):
   """Create food for snake to grow""" 
   pass
