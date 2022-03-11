@@ -48,9 +48,10 @@ class Playground:
   
 class Snake(Playground):
   """Create snake and snake's movement"""
-  def __init__(self):
+  def __init__(self, width, height, style):
     """Initialize snake position and direction of snake"""
-    self.list_pos = [(self.width//2 - 1, self.height//2 - 1),(self.width//2 - 2, self.height//2 - 1)]
+    Playground.__init__(self, width, height, style)
+    self.list_pos = [(self.width//2 - 2, self.height//2 - 2),(self.width//2 - 2, self.height//2 - 1),(self.width//2 - 1, self.height//2 - 1)]
     self.coordinates()
     self.direction_vector = [0,1]
   
