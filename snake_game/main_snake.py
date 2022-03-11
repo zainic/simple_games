@@ -1,6 +1,7 @@
 from logging import raiseExceptions
 import numpy as np
 import cv2
+import sys
 
 UP = [-1, 0]
 DOWN = [1, 0]
@@ -129,6 +130,9 @@ class Food(Playground):
 
      
 def main():
-  pass
+  snake_game = Snake(int(sys.argv[1]), int(sys.argv[2]), sys.argv[3])
+  snake_game.initial_position()
+  cv2.imshow("Snake Game", snake_game.background)
+  cv2.waitKey(0)
 
 main()
