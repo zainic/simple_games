@@ -6,6 +6,8 @@ class Playground:
   """Create area to play the game"""
   def __init__(self, width, height, style):
     """Set width, height, and style"""
+    if width <= 3 or height <= 3:
+      raise AssertionError("The board is too small") # Cant play with small board
     self.width = width
     self.height = height
     self.style = style
