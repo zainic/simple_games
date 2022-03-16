@@ -130,6 +130,38 @@ class Snake(Playground):
         frame[real_coords[1] - 7 + i][real_coords[0] - 7 + j] = x1
     self.framed = frame[:]
     
+  def move(self):
+    """Create movement for the snake with update the list position of snake """
+    self.update_direction()
+    frame = self.background[:]
+    temp = np.add(self.list_pos[-1], self.direction_vector)
+    self.list_pos.append(tuple(temp))
+    self.list_pos.pop(0)
+    self.head = self.list_pos[-1]
+    self.body = self.list_pos[:-1]
+    # Body snake
+    n = 1
+    for pos in self.body:
+      pos_index = self.list_pos.index(pos)
+      after_pos = self.list_pos[pos_index + 1]
+      for sub_pos in range(0, 15, 2):
+        real_coords = self.coords[pos]
+        sub = np.multiply(np.add(after_pos, np.negative(pos)), sub_pos)
+        for i, x in enumerate(self.snake["body_" + str(n % 2 + 1)]):
+          for j, x1 in enumerate(x):
+            if x1[0] == 255 and x1[1] == 255 and x1[2] == 255:
+              continue
+            frame[real_coords[1] - 7 + i + sub[1]][real_coords[0] - 7 + j + sub[0]] = x1
+            n += 1
+    # Head snake
+    real_coords = self.coords[self.head]
+    for i, x in enumerate(self.snake["head"]):
+      for j, x1 in enumerate(x):
+        if x1[0] == 255 and x1[1] == 255 and x1[2] == 255:
+          continue
+        frame[real_coords[1] - 7 + i][real_coords[0] - 7 + j] = x1
+    self.framed = frame[:]
+  
 class Food(Playground):
   """Create food for snake to grow""" 
   pass
