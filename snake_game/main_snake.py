@@ -3,10 +3,10 @@ import numpy as np
 import cv2
 import sys
 
-UP = [-1, 0]
-DOWN = [1, 0]
-LEFT = [0, -1]
-RIGHT = [0, 1]
+UP = [0, -1]
+DOWN = [0, 1]
+LEFT = [-1, 0]
+RIGHT = [1, 0]
 
 class Playground:
   """Create area to play the game"""
@@ -54,7 +54,8 @@ class Snake(Playground):
     Playground.__init__(self, width, height, style)
     self.list_pos = [(self.width//2 - 2, self.height//2 - 2),(self.width//2 - 2, self.height//2 - 1),(self.width//2 - 1, self.height//2 - 1)]
     self.coordinates()
-    self.direction_vector = [0,1]
+    self.direction_vector = RIGHT
+    self.exit = False
   
   def snake_texture(self):
     """Import snake texture from directory to dictionary"""
@@ -71,35 +72,39 @@ class Snake(Playground):
     d => RIGHT
     a => LEFT
     """
-    press = cv2.waitKey(10) & 0xff
+    press = cv2.waitKey(50) & 0xff
     """
     Note : Snake can't go backward
     ex : if the current snake direction is UP, player can't input DOWN ("s")
     """
-    if self.direction_vector[0] == 0 and self.direction_vector[1] == 1:
+    print(press)
+    if self.direction_vector[0] == 1 and self.direction_vector[1] == 0:
       if press == ord("w"):
         self.direction_vector = UP
       elif press == ord("s"):
         self.direction_vector = DOWN
-    elif self.direction_vector[0] == 0 and self.direction_vector[1] == -1:
-      if press == ord("w"):
-        self.direction_vector = UP
-      elif press == ord("s"):
-        self.direction_vector = DOWN
-    elif self.direction_vector[0] == 1 and self.direction_vector[1] == 0:
-      if press == ord("a"):
-        self.direction_vector = LEFT
-      elif press == ord("d"):
-        self.direction_vector = RIGHT
     elif self.direction_vector[0] == -1 and self.direction_vector[1] == 0:
+      if press == ord("w"):
+        self.direction_vector = UP
+      elif press == ord("s"):
+        self.direction_vector = DOWN
+    elif self.direction_vector[0] == 0 and self.direction_vector[1] == 1:
       if press == ord("a"):
         self.direction_vector = LEFT
       elif press == ord("d"):
         self.direction_vector = RIGHT
+    elif self.direction_vector[0] == 0 and self.direction_vector[1] == -1:
+      if press == ord("a"):
+        self.direction_vector = LEFT
+      elif press == ord("d"):
+        self.direction_vector = RIGHT
+    if press == 27:
+      self.exit = True
     
   def initial_position(self):
     """Set initial position of the snake"""
     self.snake_texture()
+    frame = self.background[:]
     self.head = self.list_pos[-1]
     self.body = self.list_pos[:-1]
     # Body snake
@@ -114,7 +119,7 @@ class Snake(Playground):
           for j, x1 in enumerate(x):
             if x1[0] == 255 and x1[1] == 255 and x1[2] == 255:
               continue
-            self.background[real_coords[1] - 7 + i + sub[1]][real_coords[0] - 7 + j + sub[0]] = x1
+            frame[real_coords[1] - 7 + i + sub[1]][real_coords[0] - 7 + j + sub[0]] = x1
             n += 1
     # Head snake
     real_coords = self.coords[self.head]
@@ -122,8 +127,9 @@ class Snake(Playground):
       for j, x1 in enumerate(x):
         if x1[0] == 255 and x1[1] == 255 and x1[2] == 255:
           continue
-        self.background[real_coords[1] - 7 + i][real_coords[0] - 7 + j] = x1
-        
+        frame[real_coords[1] - 7 + i][real_coords[0] - 7 + j] = x1
+    self.framed = frame[:]
+    
 class Food(Playground):
   """Create food for snake to grow""" 
   pass
@@ -135,7 +141,9 @@ def main():
   except IndexError:
     raise AssertionError("Need exactly 3 input (width, height, style)")
   snake_game.initial_position()
-  cv2.imshow("Snake Game", snake_game.background)
-  cv2.waitKey(0)
+  while snake_game.exit == False:
+    cv2.imshow("Snake Game", snake_game.framed)
+    print(snake_game.list_pos)
+    snake_game.move()
 
 main()
