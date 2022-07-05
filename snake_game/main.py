@@ -282,8 +282,9 @@ def main():
             snake.move(direction)
     
     text_width, text_height = cv2.getTextSize("GAME OVER", cv2.FONT_HERSHEY_SIMPLEX, 1, cv2.LINE_AA)[0]
-    CenterCoordinates = (int(frame.shape[1] / 2)-int(text_width / 2), int(frame.shape[0] / 2) - int(text_height / 2))
-    cv2.putText(frame, "GAME OVER", CenterCoordinates, cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 1, cv2.LINE_AA)
+    CenterCoordinates = (background.background.shape[1] // 2 - text_width // 2 + 8,
+                         background.background.shape[0] // 2 + text_height // 2)
+    cv2.putText(frame, "GAME OVER", CenterCoordinates, cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 2, cv2.LINE_AA)
     cv2.imshow("Snake Game", frame)
     cv2.waitKey(0)    
     cv2.destroyAllWindows()
