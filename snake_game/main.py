@@ -154,36 +154,42 @@ def get_frame(background, snake, food):
         ndarray: frame of condition
     """
     frame = np.copy(background.background)
+    
+    food_texture = food.texture
+    body1_texture = snake.texture["body_1"]
+    body2_texture = snake.texture["body_2"]
+    head_texture = snake.texture["head"]
+    
+    pixel_minus_food = np.copy(background.pixel)
+    pixel_minus_food[np.where((food_texture != [0,0,0]).all(axis=2))] = [0,0,0]
+    pixel_minus_body1 = np.copy(background.pixel)
+    pixel_minus_body1[np.where((body1_texture != [0,0,0]).all(axis=2))] = [0,0,0]
+    pixel_minus_body2 = np.copy(background.pixel)
+    pixel_minus_body2[np.where((body2_texture != [0,0,0]).all(axis=2))] = [0,0,0]
+    pixel_minus_head = np.copy(background.pixel)
+    pixel_minus_head[np.where((head_texture != [0,0,0]).all(axis=2))] = [0,0,0]
+        
     coordinate = background.coordinate
     food_coords = food.food_coords
     for coord in food_coords:
         position = coordinate[tuple(coord)]
-        for i, row in enumerate(food.texture):
-            for j, x in enumerate(row):
-                if x[0] == 255 and x[1] == 255 and x[2] == 255:
-                    continue
-                frame[position[1] - 7 + i][position[0] - 7 + j] = x
+        frame[position[1] - 7:position[1] + 9, position[0] - 7:position[0] + 9] = pixel_minus_food + food_texture
     
     head = snake.position[-1]
     body = snake.position[:-1]
-    n = 1
+    n = 0
     for N, coord in enumerate(body):
         position = coordinate[tuple(coord)]
         for sub in np.arange(0, 15, 2):
-            sub_position = position + (snake.position[N+1] - coord) * sub
-            for i, row in enumerate(snake.texture["body_" + str(n % 2 + 1)]):
-                for j, x in enumerate(row):
-                    if x[0] == 255 and x[1] == 255 and x[2] == 255:
-                        continue
-                    frame[sub_position[1] - 7 + i][sub_position[0] - 7 + j] = x
-                    n += 1
+            sub_position = position + (snake.position[N+1] - coord) * sub 
+            if n % 2 == 0:
+                frame[sub_position[1] - 7:sub_position[1] + 9, sub_position[0] - 7:sub_position[0] + 9] = pixel_minus_body1 + body1_texture
+            else:
+                frame[sub_position[1] - 7:sub_position[1] + 9, sub_position[0] - 7:sub_position[0] + 9] = pixel_minus_body2 + body2_texture
+            n += 1
                     
     position = coordinate[tuple(head)]
-    for i, row in enumerate(snake.texture["head"]):
-        for j, x in enumerate(row):
-            if x[0] == 255 and x[1] == 255 and x[2] == 255:
-                continue
-            frame[position[1] - 7 + i][position[0] - 7 + j] = x 
+    frame[position[1] - 7:position[1] + 9, position[0] - 7:position[0] + 9] = pixel_minus_head + head_texture
         
     return frame
 
