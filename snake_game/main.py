@@ -233,7 +233,6 @@ def main():
         frame = get_frame(background, snake, food)
         cv2.imshow("Snake Game", frame)
         direction, exit = get_direction(snake.direction)
-        snake.move(direction)
         
         i += 1
         if i % 10 == 9:
@@ -245,6 +244,8 @@ def main():
         if check(food.food_coords,head):
             snake.grow(direction)
             food.remove_food_from_coords(head)
+        else:
+            snake.move(direction)
         
     cv2.destroyAllWindows()
     
