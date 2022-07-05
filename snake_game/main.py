@@ -230,7 +230,13 @@ def main():
     exit = False
     
     while not exit:
-        frame = get_frame(background, snake, food)
+        try:
+            frame = get_frame(background, snake, food)
+        except:
+            text_width, text_height = cv2.getTextSize("GAME OVER", cv2.FONT_HERSHEY_SIMPLEX, 1, cv2.LINE_AA)[0]
+            CenterCoordinates = (int(frame.shape[1] / 2)-int(text_width / 2), int(frame.shape[0] / 2) - int(text_height / 2))
+            cv2.putText(frame, "GAME OVER", CenterCoordinates, cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 2, cv2.LINE_AA)
+            break
         cv2.imshow("Snake Game", frame)
         direction, exit = get_direction(snake.direction)
         
@@ -246,7 +252,9 @@ def main():
             food.remove_food_from_coords(head)
         else:
             snake.move(direction)
-        
+    
+    cv2.imshow("Snake Game", frame)
+    cv2.waitKey(0)    
     cv2.destroyAllWindows()
     
 if __name__ == "__main__":
