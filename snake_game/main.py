@@ -169,11 +169,14 @@ def get_frame(background, snake, food):
     pixel_minus_food[np.where((food_texture != [0,0,0]).all(axis=2))] = [0,0,0]
         
     coordinate = background.coordinate
+    
+    # Food frame
     food_coords = food.food_coords
     for coord in food_coords:
         position = coordinate[tuple(coord)]
         frame[position[1] - 7:position[1] + 9, position[0] - 7:position[0] + 9] = pixel_minus_food + food_texture
     
+    # Snake (body) frame
     head = snake.position[-1]
     body = snake.position[:-1]
     alternate = 0
@@ -189,12 +192,18 @@ def get_frame(background, snake, food):
                 pixel_minus_body[np.where((body2_texture != [0,0,0]).all(axis=2))] = [0,0,0]
                 frame[sub_position[1] - 7:sub_position[1] + 9, sub_position[0] - 7:sub_position[0] + 9] = pixel_minus_body + body2_texture
             alternate += 1
-                    
+    
+    # Snake (head) frame    
     position = coordinate[tuple(head)]
     pixel_minus_head = np.copy(frame[position[1] - 7:position[1] + 9, position[0] - 7:position[0] + 9])
     pixel_minus_head[np.where((head_texture != [0,0,0]).all(axis=2))] = [0,0,0]
     frame[position[1] - 7:position[1] + 9, position[0] - 7:position[0] + 9] = pixel_minus_head + head_texture
-        
+    
+    # Scoreboard
+    score = len(snake.position) - 3
+    text_width, text_height = cv2.getTextSize("Score : " + str(score), cv2.FONT_HERSHEY_SIMPLEX, 0.5, cv2.LINE_AA)[0]
+    cv2.putText(frame, "Score : " + str(score), (10, text_height+10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255), 1, cv2.LINE_AA)
+    
     return frame
 
 def check(array_list, tupl):
