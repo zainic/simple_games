@@ -54,13 +54,17 @@ class Snake:
         
     def create_snake_texture(self):
         self.texture = {}
-        self.texture["body_1"] = cv2.imread(os.path.join(".", "snake_texture", self.style,  "body_1.png"))
-        self.texture["body_2"] = cv2.imread(os.path.join(".", "snake_texture", self.style,  "body_2.png"))
-        self.texture["head"] = cv2.imread(os.path.join(".", "snake_texture", self.style,  "head.png"))
+        temp_body1_texture = cv2.imread(os.path.join(".", "snake_texture", self.style,  "body_1.png"))
+        temp_body2_texture = cv2.imread(os.path.join(".", "snake_texture", self.style,  "body_2.png"))
+        temp_head_texture = cv2.imread(os.path.join(".", "snake_texture", self.style,  "head.png"))
         
-        self.texture["body_1"][np.where((self.texture["body_1"] == [255,255,255]).all(axis=2))] = [0,0,0]
-        self.texture["body_2"][np.where((self.texture["body_2"] == [255,255,255]).all(axis=2))] = [0,0,0]
-        self.texture["head"][np.where((self.texture["head"] == [255,255,255]).all(axis=2))] = [0,0,0]
+        self.texture["body_1"] = np.copy(temp_body1_texture)
+        self.texture["body_2"] = np.copy(temp_body2_texture)
+        self.texture["head"] = np.copy(temp_head_texture)
+        
+        self.texture["body_1"][np.where((temp_body1_texture == [255,255,255]).all(axis=2))] = [0,0,0]
+        self.texture["body_2"][np.where((temp_body2_texture == [255,255,255]).all(axis=2))] = [0,0,0]
+        self.texture["head"][np.where((temp_head_texture == [255,255,255]).all(axis=2))] = [0,0,0]
     
     def move(self, direction):
         """Update the position of the snake"""
@@ -83,8 +87,9 @@ class Food:
                                       np.random.randint(0, self.height))])
         
     def create_food_texture(self):
-        self.texture = cv2.imread(os.path.join(".", "food_texture", self.style + ".png"))
-        self.texture[np.where((self.texture == [255,255,255]).all(axis=2))] = [0,0,0]
+        temp_food_texture = cv2.imread(os.path.join(".", "food_texture", self.style + ".png"))
+        self.texture = np.copy(temp_food_texture)
+        self.texture[np.where((temp_food_texture == [255,255,255]).all(axis=2))] = [0,0,0]
         
     def spawn_food(self):
         x = np.random.randint(0,self.width)
@@ -107,7 +112,7 @@ def get_direction(current_direction):
     d => RIGHT
     a => LEFT
     """
-    press = cv2.waitKey(500) & 0xff
+    press = cv2.waitKey(200) & 0xff
     direction = current_direction
     """
     Note : Snake can't go backward
@@ -162,12 +167,6 @@ def get_frame(background, snake, food):
     
     pixel_minus_food = np.copy(background.pixel)
     pixel_minus_food[np.where((food_texture != [0,0,0]).all(axis=2))] = [0,0,0]
-    pixel_minus_body1 = np.copy(background.pixel)
-    pixel_minus_body1[np.where((body1_texture != [0,0,0]).all(axis=2))] = [0,0,0]
-    pixel_minus_body2 = np.copy(background.pixel)
-    pixel_minus_body2[np.where((body2_texture != [0,0,0]).all(axis=2))] = [0,0,0]
-    pixel_minus_head = np.copy(background.pixel)
-    pixel_minus_head[np.where((head_texture != [0,0,0]).all(axis=2))] = [0,0,0]
         
     coordinate = background.coordinate
     food_coords = food.food_coords
@@ -177,18 +176,23 @@ def get_frame(background, snake, food):
     
     head = snake.position[-1]
     body = snake.position[:-1]
-    n = 0
+    alternate = 0
     for N, coord in enumerate(body):
         position = coordinate[tuple(coord)]
         for sub in np.arange(0, 15, 2):
             sub_position = position + (snake.position[N+1] - coord) * sub 
-            if n % 2 == 0:
-                frame[sub_position[1] - 7:sub_position[1] + 9, sub_position[0] - 7:sub_position[0] + 9] = pixel_minus_body1 + body1_texture
+            pixel_minus_body = np.copy(frame[sub_position[1] - 7:sub_position[1] + 9, sub_position[0] - 7:sub_position[0] + 9])
+            if alternate % 2 == 0:
+                pixel_minus_body[np.where((body1_texture != [0,0,0]).all(axis=2))] = [0,0,0]
+                frame[sub_position[1] - 7:sub_position[1] + 9, sub_position[0] - 7:sub_position[0] + 9] = pixel_minus_body + body1_texture
             else:
-                frame[sub_position[1] - 7:sub_position[1] + 9, sub_position[0] - 7:sub_position[0] + 9] = pixel_minus_body2 + body2_texture
-            n += 1
+                pixel_minus_body[np.where((body2_texture != [0,0,0]).all(axis=2))] = [0,0,0]
+                frame[sub_position[1] - 7:sub_position[1] + 9, sub_position[0] - 7:sub_position[0] + 9] = pixel_minus_body + body2_texture
+            alternate += 1
                     
     position = coordinate[tuple(head)]
+    pixel_minus_head = np.copy(frame[position[1] - 7:position[1] + 9, position[0] - 7:position[0] + 9])
+    pixel_minus_head[np.where((head_texture != [0,0,0]).all(axis=2))] = [0,0,0]
     frame[position[1] - 7:position[1] + 9, position[0] - 7:position[0] + 9] = pixel_minus_head + head_texture
         
     return frame
