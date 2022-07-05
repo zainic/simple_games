@@ -112,7 +112,7 @@ def get_direction(current_direction):
     d => RIGHT
     a => LEFT
     """
-    press = cv2.waitKey(200) & 0xff
+    press = cv2.waitKey(50) & 0xff
     direction = current_direction
     """
     Note : Snake can't go backward
@@ -214,6 +214,24 @@ def check(array_list, tupl):
         
     return False
 
+def check_uniqueness(array_list):
+    """
+    Checking if every tuple (1 x 2) is unique in array_list (n x 2)
+
+    Args:
+        array_list (ndarray): list of array (n x 2)
+
+    Returns:
+        boolean : True or False
+    """
+    dicts = {}
+    for i,j in array_list:
+        if (i,j) in dicts.keys():
+            return False
+        else:
+            dicts[(i,j)] = True
+    return True
+
 def main():
     try:
         background = Background(int(sys.argv[1]), int(sys.argv[2]), sys.argv[3])
@@ -233,10 +251,11 @@ def main():
         try:
             frame = get_frame(background, snake, food)
         except:
-            text_width, text_height = cv2.getTextSize("GAME OVER", cv2.FONT_HERSHEY_SIMPLEX, 1, cv2.LINE_AA)[0]
-            CenterCoordinates = (int(frame.shape[1] / 2)-int(text_width / 2), int(frame.shape[0] / 2) - int(text_height / 2))
-            cv2.putText(frame, "GAME OVER", CenterCoordinates, cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 2, cv2.LINE_AA)
             break
+        
+        if not check_uniqueness(snake.position):
+            break
+        
         cv2.imshow("Snake Game", frame)
         direction, exit = get_direction(snake.direction)
         
@@ -253,6 +272,9 @@ def main():
         else:
             snake.move(direction)
     
+    text_width, text_height = cv2.getTextSize("GAME OVER", cv2.FONT_HERSHEY_SIMPLEX, 1, cv2.LINE_AA)[0]
+    CenterCoordinates = (int(frame.shape[1] / 2)-int(text_width / 2), int(frame.shape[0] / 2) - int(text_height / 2))
+    cv2.putText(frame, "GAME OVER", CenterCoordinates, cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 1, cv2.LINE_AA)
     cv2.imshow("Snake Game", frame)
     cv2.waitKey(0)    
     cv2.destroyAllWindows()
