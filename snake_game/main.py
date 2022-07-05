@@ -57,6 +57,10 @@ class Snake:
         self.texture["body_1"] = cv2.imread(os.path.join(".", "snake_texture", self.style,  "body_1.png"))
         self.texture["body_2"] = cv2.imread(os.path.join(".", "snake_texture", self.style,  "body_2.png"))
         self.texture["head"] = cv2.imread(os.path.join(".", "snake_texture", self.style,  "head.png"))
+        
+        self.texture["body_1"][np.where((self.texture["body_1"] == [255,255,255]).all(axis=2))] = [0,0,0]
+        self.texture["body_2"][np.where((self.texture["body_2"] == [255,255,255]).all(axis=2))] = [0,0,0]
+        self.texture["head"][np.where((self.texture["head"] == [255,255,255]).all(axis=2))] = [0,0,0]
     
     def move(self, direction):
         """Update the position of the snake"""
@@ -80,6 +84,7 @@ class Food:
         
     def create_food_texture(self):
         self.texture = cv2.imread(os.path.join(".", "food_texture", self.style + ".png"))
+        self.texture[np.where((self.texture == [255,255,255]).all(axis=2))] = [0,0,0]
         
     def spawn_food(self):
         x = np.random.randint(0,self.width)
