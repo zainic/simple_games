@@ -42,7 +42,7 @@ def create_frame(background, ship, enemy):
     
 #     return keys
 
-def get_direction_from_key(keys):
+def get_direction_from_keys(keys):
     """
     function that return direction for ship from key pressed
 

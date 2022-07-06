@@ -36,14 +36,14 @@ def main():
         cv2.imshow("WarShip Game", frame)
         key = cv2.waitKey(50) & 0xff
         
-        direction = get_direction_from_key(pressed_keys)
+        direction = get_direction_from_keys(pressed_keys)
         
         ship.move_ship(direction)
         background.move_background(5)
         
         EXIT = get_exit_status(key)
         
-    listenet.stop()
+    listener.stop()
 
 if __name__ == "__main__":
     main()
