@@ -29,25 +29,12 @@ def create_frame(background, ship, enemy):
     
     return frame
 
-# def get_input_key():
-#     """
-#     Allow us to get multiple pressed key
-
-#     Returns:
-#         array: list of string that user pressed key
-#     """
-    
-#     listener = Listener(on_press=on_press, on_release=on_release)
-#     listener.start()
-    
-#     return keys
-
 def get_direction_from_keys(keys):
     """
     function that return direction for ship from key pressed
 
     Args:
-        key (int): key that got from cv2.waitKey()
+        keys (set): keys that got from Listener
 
     Returns:
         array: direction 
