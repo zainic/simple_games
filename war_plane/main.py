@@ -36,8 +36,10 @@ def main():
         except:
             ship.move_ship(np.negative(direction))
             frame = create_frame(background, ship, enemy)
-            
-        cv2.imshow("WarShip Game", frame)
+        
+        showed_frame = frame[20:REAL_WINDOW_HEIGHT, 10:REAL_WINDOW_WIDTH]
+        
+        cv2.imshow("WarShip Game", showed_frame)
         key = cv2.waitKey(10) & 0xff
         
         direction = get_direction_from_keys(pressed_keys)

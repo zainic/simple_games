@@ -5,6 +5,9 @@ import os, sys
 WINDOW_WIDTH = 640
 WINDOW_HEIGHT = 720
 
+REAL_WINDOW_WIDTH = 620
+REAL_WINDOW_HEIGHT = 680
+
 UP = np.array([-1, 0])
 DOWN = np.array([1, 0])
 LEFT = np.array([0, -1])
@@ -58,12 +61,12 @@ class Ship:
         """
         Initial position of the ship
         """
-        self.position = (WINDOW_HEIGHT - 64 - 20, WINDOW_WIDTH//2 - 32)
+        self.position = (WINDOW_HEIGHT - 64 - 40, WINDOW_WIDTH//2 - 32)
         
         self.start_position_of_bullet = {}
-        self.start_position_of_bullet["1"] = (WINDOW_HEIGHT - 64 - 20 + 16, WINDOW_WIDTH//2 - 32 + 30)
-        self.start_position_of_bullet["2"] = (WINDOW_HEIGHT - 64 - 20 + 39, WINDOW_WIDTH//2 - 32 + 12)
-        self.start_position_of_bullet["3"] = (WINDOW_HEIGHT - 64 - 20 + 39, WINDOW_WIDTH//2 - 32 + 49)
+        self.start_position_of_bullet["1"] = (WINDOW_HEIGHT - 64 - 40 + 16, WINDOW_WIDTH//2 - 32 + 30)
+        self.start_position_of_bullet["2"] = (WINDOW_HEIGHT - 64 - 40 + 39, WINDOW_WIDTH//2 - 32 + 12)
+        self.start_position_of_bullet["3"] = (WINDOW_HEIGHT - 64 - 40 + 39, WINDOW_WIDTH//2 - 32 + 49)
         
         self.main_bullet = []
         self.secondary_bullet = []
