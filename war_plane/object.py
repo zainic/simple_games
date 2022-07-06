@@ -93,15 +93,19 @@ class Ship:
         Shoot the bullet from the ship
         """
         
+        main_bullet = np.array(self.start_position_of_bullet["1"])
+        secondary_bullet_1 = np.array(self.start_position_of_bullet["2"])
+        secondary_bullet_2 = np.array(self.start_position_of_bullet["3"])
+        
         if self.current_level == 1:
-            self.main_bullet.insert(np.arange(self.start_position_of_bullet["1"][0], 0, -5))
+            self.main_bullet.insert(0, main_bullet)
         elif self.current_level == 2:
-            self.secondary_bullet.insert(np.arange(self.start_position_of_bullet["2"][0], 0, -5))
-            self.secondary_bullet.insert(np.arange(self.start_position_of_bullet["3"][0], 0, -5))
+            self.secondary_bullet.insert(0, secondary_bullet_1)
+            self.secondary_bullet.insert(0, secondary_bullet_2)
         elif self.current_level >= 3:
-            self.main_bullet.insert(np.arange(self.start_position_of_bullet["1"][0], 0, -5))
-            self.secondary_bullet.insert(np.arange(self.start_position_of_bullet["2"][0], 0, -5))
-            self.secondary_bullet.insert(np.arange(self.start_position_of_bullet["3"][0], 0, -5))
+            self.main_bullet.insert(0, main_bullet)
+            self.secondary_bullet.insert(0, secondary_bullet_1)
+            self.secondary_bullet.insert(0, secondary_bullet_2)
         
     
 class Enemy:

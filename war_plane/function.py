@@ -1,3 +1,4 @@
+from telnetlib import KERMIT
 import numpy as np
 import cv2
 import os, sys
@@ -21,11 +22,34 @@ def create_frame(background, ship, enemy):
     frame = np.copy(background.background)
     
     # Show ship
-    position = ship.position
-    texture = ship.ship_texture["lv" + str(ship.current_level)]
+    position = np.copy(ship.position)
+    texture = np.copy(ship.ship_texture["lv" + str(ship.current_level)])
     part_minus_ship = np.copy(frame[position[0] : position[0] + 64, position[1] : position[1] + 64])
     part_minus_ship[np.where((texture != [0, 0, 0]).all(axis=2))] = [0, 0, 0]
     frame[position[0] : position[0] + 64, position[1] : position[1] + 64] = part_minus_ship + texture
+    
+    # Show bullet
+    copy_of_main_bullets_pos = np.copy(ship.main_bullet)
+    texture = np.copy(ship.bullet_texture["main"])
+    for i, position in enumerate(copy_of_main_bullets_pos):
+        try:
+            part_minus_bullet = np.copy(frame[position[0] : position[0] + texture.shape[0], position[1] : position[1] + texture.shape[1]])
+            part_minus_bullet[np.where((texture != [0, 0, 0]).all(axis=2))] = [0, 0, 0]
+            frame[position[0] : position[0] + texture.shape[0], position[1] : position[1] + texture.shape[1]] = part_minus_bullet + texture
+            ship.main_bullet[i] += UP * 6
+        except:
+            ship.main_bullet.pop(i)
+    
+    copy_of_secondary_bullets_pos = np.copy(ship.secondary_bullet)
+    texture = np.copy(ship.bullet_texture["secondary"])
+    for i, position in enumerate(copy_of_secondary_bullets_pos):
+        try:
+            part_minus_bullet = np.copy(frame[position[0] : position[0] + texture.shape[0], position[1] : position[1] + texture.shape[1]])
+            part_minus_bullet[np.where((texture != [0, 0, 0]).all(axis=2))] = [0, 0, 0]
+            frame[position[0] : position[0] + texture.shape[0], position[1] : position[1] + texture.shape[1]] = part_minus_bullet + texture
+            ship.secondary_bullet[i] += UP * 6
+        except:
+            ship.secondary_bullet.pop(i)
     
     return frame
 
@@ -52,6 +76,21 @@ def get_direction_from_keys(keys):
         direction += RIGHT
         
     return direction
+
+def is_shooting(keys):
+    """
+    Checking if player was shooting by pressing space button
+
+    Args:
+        keys (set): keys that got from Listener
+
+    Returns:
+        bool: shooting status 
+    """
+    if keyboard.Key.space in keys:
+        return True
+    
+    return False
 
 def get_exit_status(key):
     """
