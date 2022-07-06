@@ -50,11 +50,23 @@ class Ship:
         self.ship_texture["lv2"] = cv2.imread(os.path.join(".", "texture", "ship_level_2.png"))
         self.ship_texture["lv3"] = cv2.imread(os.path.join(".", "texture", "ship_level_3.png"))
         
+        self.bullet_texture = {}
+        self.bullet_texture["main"] = cv2.imread(os.path.join(".", "texture", "main_bullet.png"))
+        self.bullet_texture["secondary"] = cv2.imread(os.path.join(".", "texture", "secondary_bullet.png"))
+        
         self.current_level = 1
         """
         Initial position of the ship
         """
         self.position = (WINDOW_HEIGHT - 64 - 20, WINDOW_WIDTH//2 - 32)
+        
+        self.start_position_of_bullet = {}
+        self.start_position_of_bullet["1"] = (WINDOW_HEIGHT - 64 - 20 + 16, WINDOW_WIDTH//2 - 32 + 30)
+        self.start_position_of_bullet["2"] = (WINDOW_HEIGHT - 64 - 20 + 39, WINDOW_WIDTH//2 - 32 + 12)
+        self.start_position_of_bullet["3"] = (WINDOW_HEIGHT - 64 - 20 + 39, WINDOW_WIDTH//2 - 32 + 49)
+        
+        self.main_bullet = []
+        self.secondary_bullet = []
     
     def move_ship(self, direction):
         """
@@ -69,6 +81,12 @@ class Ship:
             pass
         else:
             self.position = (self.position[0] + direction[0]*4, self.position[1] + direction[1]*4)
+            self.start_position_of_bullet["1"] = (self.start_position_of_bullet["1"][0] + direction[0]*4, 
+                                                  self.start_position_of_bullet["1"][1] + direction[1]*4)
+            self.start_position_of_bullet["2"] = (self.start_position_of_bullet["2"][0] + direction[0]*4, 
+                                                  self.start_position_of_bullet["2"][1] + direction[1]*4)
+            self.start_position_of_bullet["3"] = (self.start_position_of_bullet["3"][0] + direction[0]*4, 
+                                                  self.start_position_of_bullet["3"][1] + direction[1]*4)
         
     def shoot_bullet(self):
         """
@@ -76,11 +94,14 @@ class Ship:
         """
         
         if self.current_level == 1:
-            pass
+            self.main_bullet.insert(np.arange(self.start_position_of_bullet["1"][0], 0, -5))
         elif self.current_level == 2:
-            pass
+            self.secondary_bullet.insert(np.arange(self.start_position_of_bullet["2"][0], 0, -5))
+            self.secondary_bullet.insert(np.arange(self.start_position_of_bullet["3"][0], 0, -5))
         elif self.current_level >= 3:
-            pass
+            self.main_bullet.insert(np.arange(self.start_position_of_bullet["1"][0], 0, -5))
+            self.secondary_bullet.insert(np.arange(self.start_position_of_bullet["2"][0], 0, -5))
+            self.secondary_bullet.insert(np.arange(self.start_position_of_bullet["3"][0], 0, -5))
         
     
 class Enemy:
