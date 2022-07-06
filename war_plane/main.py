@@ -47,7 +47,7 @@ def main():
             delay_shoot = 10
         
         ship.move_ship(direction)
-        background.move_background(3)
+        background.move_background(1)
         
         EXIT = get_exit_status(key)
         

@@ -66,13 +66,13 @@ def get_direction_from_keys(keys):
     
     direction = np.copy(NO_MOVE)
     
-    if keyboard.Key.up in keys:
+    if keyboard.KeyCode.from_char("w") in keys:
         direction += UP
-    if keyboard.Key.down in keys:
+    if keyboard.KeyCode.from_char("s") in keys:
         direction += DOWN
-    if keyboard.Key.left in keys:
+    if keyboard.KeyCode.from_char("a") in keys:
         direction += LEFT
-    if keyboard.Key.right in keys:
+    if keyboard.KeyCode.from_char("d") in keys:
         direction += RIGHT
         
     return direction
