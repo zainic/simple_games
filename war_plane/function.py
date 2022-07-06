@@ -3,6 +3,7 @@ import cv2
 import os, sys
 
 from object import *
+from pynput import keyboard
 
 def create_frame(background, ship, enemy):
     """
@@ -41,7 +42,7 @@ def create_frame(background, ship, enemy):
     
 #     return keys
 
-def get_direction_from_key(key):
+def get_direction_from_key(keys):
     """
     function that return direction for ship from key pressed
 
@@ -52,16 +53,16 @@ def get_direction_from_key(key):
         array: direction 
     """
     
-    if key == ord("w"):
-        direction = UP
-    elif key == ord("s"):
-        direction = DOWN
-    elif key == ord("a"):
-        direction = LEFT
-    elif key == ord("d"):
-        direction = RIGHT
-    else:
-        direction = NO_MOVE
+    direction = np.copy(NO_MOVE)
+    
+    if keyboard.Key.up in keys:
+        direction += UP
+    if keyboard.Key.down in keys:
+        direction += DOWN
+    if keyboard.Key.left in keys:
+        direction += LEFT
+    if keyboard.Key.right in keys:
+        direction += RIGHT
         
     return direction
 
