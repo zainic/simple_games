@@ -32,7 +32,7 @@ class Background:
         """
         self.full_background = cv2.imread(os.path.join(".", "texture", "background.png"))
         self.background = self.full_background[:WINDOW_HEIGHT, :]
-        self.coordinate = np.array([(i,j) for i in range(WINDOW_HEIGHT) for j in range(WINDOW_WIDTH)])
+        self.coordinate = np.array([[tuple((i,j)) for i in range(WINDOW_HEIGHT)] for j in range(WINDOW_WIDTH)], dtype='i,i')
         self.i = int(0)
         
     def move_background(self, step):
@@ -197,4 +197,6 @@ class Enemy:
         for i, _ in enumerate(self.enemies_position_in_t):
             self.enemies_position_in_t[i] += step
         
-        
+class Destruction:
+    def __init__(self):
+        pass
