@@ -2,6 +2,14 @@ import numpy as np
 import cv2
 import os, sys
 
+"""
+Note : 
+
+All object coordinates are actually top-left corner of the texture
+not in the middle
+
+"""
+
 WINDOW_WIDTH = 640
 WINDOW_HEIGHT = 720
 
@@ -59,9 +67,17 @@ class Ship:
         
         self.current_level = 1
         """
-        Initial position of the ship
+        Initial position and hitbox of the ship
         """
         self.position = (WINDOW_HEIGHT - 64 - 40, WINDOW_WIDTH//2 - 32)
+        
+        self.ship_hitbox = {}
+        self.ship_hitbox["lv1"] = ((self.position[0] + 13, self.position[1] + 8),
+                                   (self.position[0] + 64, self.position[1] + 56))
+        self.ship_hitbox["lv2"] = ((self.position[0] + 12, self.position[1] + 0),
+                                   (self.position[0] + 64, self.position[1] + 64))
+        self.ship_hitbox["lv3"] = ((self.position[0] + 14, self.position[1] + 8),
+                                   (self.position[0] + 64, self.position[1] + 56))
         
         self.start_position_of_bullet = {}
         self.start_position_of_bullet["1"] = (WINDOW_HEIGHT - 64 - 40 + 16, WINDOW_WIDTH//2 - 32 + 30)
@@ -73,7 +89,7 @@ class Ship:
     
     def move_ship(self, direction):
         """
-        Move the ship into the direction
+        Move the ship into the direction update the hitbox
 
         Args:
             direction (array): direction of ship movement
@@ -90,6 +106,13 @@ class Ship:
                                                   self.start_position_of_bullet["2"][1] + direction[1]*4)
             self.start_position_of_bullet["3"] = (self.start_position_of_bullet["3"][0] + direction[0]*4, 
                                                   self.start_position_of_bullet["3"][1] + direction[1]*4)
+        
+        self.ship_hitbox["lv1"] = ((self.position[0] + 13, self.position[1] + 8),
+                                   (self.position[0] + 64, self.position[1] + 56))
+        self.ship_hitbox["lv2"] = ((self.position[0] + 12, self.position[1] + 0),
+                                   (self.position[0] + 64, self.position[1] + 64))
+        self.ship_hitbox["lv3"] = ((self.position[0] + 14, self.position[1] + 8),
+                                   (self.position[0] + 64, self.position[1] + 56))
         
     def shoot_bullet(self):
         """
@@ -116,4 +139,62 @@ class Enemy:
     Create enemy or swarm of enemy object
     """
     def __init__(self):
-        pass
+        """
+        Import the texture of enemy ship
+        """
+        self.enemy_texture = {}
+        self.enemy_texture["type1"] = cv2.imread(os.path.join(".", "texture", "enemy_type_1.png"))
+        self.enemy_texture["type2"] = cv2.imread(os.path.join(".", "texture", "enemy_type_2.png"))
+        self.enemy_texture["type3"] = cv2.imread(os.path.join(".", "texture", "enemy_type_3.png"))
+        
+        self.current_enemy_texture = np.copy(self.enemy_texture["type1"])
+        
+        """
+        Set path for the enemy
+        """
+        self.path = {}
+        self.path["1"] = lambda t : (t, 10 + 200 * np.sin(np.deg2rad(t)) + 310 - 10)
+        self.path["2"] = lambda t : (t, 10 + 200 * np.cos(np.deg2rad(t + 90)) + 310 - 10)
+        self.path["3"] = lambda t : (t + 0.2 * t, 10 + 310 - 10)
+        self.path["4"] = lambda t : (t, 10 + 310 + 250 - 10)
+        self.path["5"] = lambda t : (t, 10 + 310 - 250 - 10)
+        self.path["6"] = lambda t : (t, 10 + 300 - np.abs(t - 300) + 310 - 10)
+        self.path["7"] = lambda t : (t, 10 - 300 + np.abs(t - 300) + 310 - 10)
+        
+        self.enemy_position = []
+        self.enemies_position_in_t = []
+        self.number_path = np.array([])
+        
+    def deploy_enemies(self, type_enemy, type_swarm):
+        """
+        Deploy enemy's swarm or create initial position of enemies
+
+        Args:
+            type_enemy (int): type of enemy's texture
+            type_swarm (int): type of enemy's swarm
+        """
+        self.enemy_position_in_t = np.arange(0, -301, -30)
+        self.current_enemy_texture = np.copy(self.enemy_texture["type" + str(type_enemy)])
+        
+        if type_swarm == 1:
+            self.enemies_position_in_t = [np.copy(self.enemy_position_in_t), np.copy(self.enemy_position_in_t)]
+            self.number_path = np.array([1,2])
+        elif type_swarm == 2:
+            self.enemies_position_in_t = [np.copy(self.enemy_position_in_t), np.copy(self.enemy_position_in_t), np.copy(self.enemy_position_in_t)]
+            self.number_path = np.array([3,4,5])
+        elif type_swarm == 3:
+            self.enemies_position_in_t = [np.copy(self.enemy_position_in_t), np.copy(self.enemy_position_in_t)]
+            self.number_path = np.array([6,7])
+            
+    def update_enemies_position(self, step = 5):
+        """
+        Update the enemies position
+
+        Args:
+            step (int): step of movement in pixel
+        """
+        
+        for i, _ in enumerate(self.enemies_position_in_t):
+            self.enemies_position_in_t[i] += step
+        
+        

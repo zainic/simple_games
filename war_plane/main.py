@@ -33,11 +33,11 @@ def main():
         
         try:
             frame = create_frame(background, ship, enemy)
-        except:
+        except Exception as e:
             ship.move_ship(np.negative(direction))
             frame = create_frame(background, ship, enemy)
         
-        showed_frame = frame[20:REAL_WINDOW_HEIGHT, 10:REAL_WINDOW_WIDTH]
+        showed_frame = frame[20:REAL_WINDOW_HEIGHT + 20, 10:REAL_WINDOW_WIDTH + 10]
         
         cv2.imshow("WarShip Game", showed_frame)
         key = cv2.waitKey(10) & 0xff
@@ -50,6 +50,14 @@ def main():
         
         ship.move_ship(direction)
         background.move_background(1)
+        
+        enemies_alive = np.sum([len(enemies) for enemies in enemy.enemies_position_in_t])
+        if enemies_alive == 0:
+            type_enemy = np.random.randint(1,4)
+            type_swarm = np.random.randint(1,4)
+            enemy.deploy_enemies(type_enemy, type_swarm)
+        else:
+            enemy.update_enemies_position(step = 3)
         
         EXIT = get_exit_status(key)
         
