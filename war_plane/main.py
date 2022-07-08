@@ -55,9 +55,10 @@ def main():
         if enemies_alive == 0:
             type_enemy = np.random.randint(1,4)
             type_swarm = np.random.randint(1,4)
+            speed_step = np.random.randint(2,5)
             enemy.deploy_enemies(type_enemy, type_swarm)
         else:
-            enemy.update_enemies_position(step = 3)
+            enemy.update_enemies_position(step = speed_step)
         
         EXIT = get_exit_status(key)
         
