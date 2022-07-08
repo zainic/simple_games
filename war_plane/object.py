@@ -96,9 +96,9 @@ class Ship:
         Args:
             direction (array): direction of ship movement
         """
-        if self.position[0] + direction[0]*4 + 64 >= WINDOW_HEIGHT and self.position[1] + direction[1]*4 + 64 >= WINDOW_WIDTH:
+        if self.position[0] + direction[0]*4 + 64 >= REAL_WINDOW_HEIGHT + 20 or self.position[1] + direction[1]*4 + 64 >= REAL_WINDOW_WIDTH + 10:
             pass
-        elif self.position[0] + direction[0]*4 <= 0 and self.position[1] + direction[1]*4 <= 0:
+        elif self.position[0] + direction[0]*4 <= 20 or self.position[1] + direction[1]*4 <= 10:
             pass
         else:
             self.position = (self.position[0] + direction[0]*4, self.position[1] + direction[1]*4)
