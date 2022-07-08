@@ -204,6 +204,44 @@ class Effect:
     def __init__(self):
         """
         Import the texture of effect
-        it forms list of event image
+        It forms list of event image
         """
-        self.full_effect = {}
+        self.full_effects = {}
+        self.full_effects["explosive"] = cv2.imread(os.path.join(".", "texture", "explosive.png"))
+        
+        self.effects = {}
+        self.effects["explosive"] = np.split(self.full_effects["explosive"], 30)
+        
+        self.effect_size = {}
+        self.effect_size["explosive"] = self.effects["explosive"][0].shape[:2]
+        
+        """
+        Initial condition
+        """ 
+        self.effect_coordinates = {}
+        self.effect_coordinates["explosive"] = {}
+        
+    def next_state(self):
+        """
+        Next state of explosion
+        """
+        removed_state = []
+        
+        for key in self.effect_coordinates.keys():
+            for coord in self.effect_coordinates[key].keys():
+                 self.effect_coordinates[key][coord] += 1
+                 if self.effect_coordinates[key][coord] >= len(self.effects[key]):
+                    removed_state.append((key, coord))
+        
+        for key, coord in removed_state:
+            self.effect_coordinates[key].pop(coord)
+    
+    def explode(self, coordinates):
+        """
+        Create explosion from coordinates
+
+        Args:
+            coordinates (tuple): coordinates of explosion in pixel
+        """
+        self.effect_coordinates["explosive"][coordinates] = 1
+        
