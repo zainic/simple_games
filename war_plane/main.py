@@ -38,9 +38,14 @@ def main():
             ship.move_ship(np.negative(direction))
             frame = create_frame(background, ship, enemy, effect)
         
-        showed_frame = frame[20:REAL_WINDOW_HEIGHT + 20, 10:REAL_WINDOW_WIDTH + 10]
+        showed_frame = np.copy(frame[20:REAL_WINDOW_HEIGHT + 20, 10:REAL_WINDOW_WIDTH + 10])
+        
+        if ship.hit:
+            put_text_in_the_middle(showed_frame, "GAME OVER", size=2)
+            put_text_in_the_middle(showed_frame, "Press esc to exit the game", size=1, add_height=50)
         
         cv2.imshow("WarShip Game", showed_frame)
+        
         key = cv2.waitKey(10) & 0xff
         
         direction = get_direction_from_keys(pressed_keys)

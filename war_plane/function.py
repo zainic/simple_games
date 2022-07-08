@@ -8,6 +8,13 @@ import os, sys
 from object import *
 from pynput import keyboard
 
+def put_text_in_the_middle(frame, text = "Sample Text", size = 1, size_stroke=1, style = cv2.FONT_HERSHEY_SIMPLEX, line = cv2.LINE_AA, add_height=0):
+    text_width, text_height = cv2.getTextSize(text, style, size, line)[0]
+    CenterCoordinates = (frame.shape[1] // 2 - text_width // 2 ,
+                         frame.shape[0] // 2 + text_height // 2 + int(add_height))
+    cv2.putText(frame, text, CenterCoordinates, style, size, (255,255,255), size_stroke, line)
+    return frame
+
 def check_intersection(array1, array2):
     """
     Check if 2 arrays have common elements
@@ -48,8 +55,9 @@ def create_frame(background, ship, enemy, effect):
     copy_of_secondary_bullets_pos = np.copy(ship.secondary_bullet)
     enemies_position = np.copy(enemy.enemies_position_in_t)
     
-    # Get enemy texture
+    # Get texture early
     enemy_texture = np.copy(enemy.current_enemy_texture)
+    ship_texture = np.copy(ship.ship_texture["lv" + str(ship.current_level)])
     
     # Show effect
     for key in effect.effect_coordinates.keys():
@@ -86,10 +94,10 @@ def create_frame(background, ship, enemy, effect):
             deleted_bullet.append(i + len(copy_of_main_bullets_pos))
     
     # Show ship
-    texture = np.copy(ship.ship_texture["lv" + str(ship.current_level)])
-    part_minus_ship = np.copy(frame[ship_position[0] : ship_position[0] + 64, ship_position[1] : ship_position[1] + 64])
-    part_minus_ship[np.where((texture != [0, 0, 0]).all(axis=2))] = [0, 0, 0]
-    frame[ship_position[0] : ship_position[0] + 64, ship_position[1] : ship_position[1] + 64] = part_minus_ship + texture
+    if not ship.hit:
+        part_minus_ship = np.copy(frame[ship_position[0] : ship_position[0] + 64, ship_position[1] : ship_position[1] + 64])
+        part_minus_ship[np.where((ship_texture != [0, 0, 0]).all(axis=2))] = [0, 0, 0]
+        frame[ship_position[0] : ship_position[0] + 64, ship_position[1] : ship_position[1] + 64] = part_minus_ship + ship_texture
     
     # Show enemies ship
     enemies_alive = np.sum([len(enemies) for enemies in enemy.enemies_position_in_t])
@@ -108,6 +116,7 @@ def create_frame(background, ship, enemy, effect):
                         deleted_enemy.append((number, t_value))
                     continue
                 
+                # Check if bullet hits enemy
                 for j, pos in enumerate(bullet_positions):
                     
                     if j < len(copy_of_main_bullets_pos):
@@ -115,7 +124,7 @@ def create_frame(background, ship, enemy, effect):
                     else:
                         bullet_texture = np.copy(ship.bullet_texture["secondary"])
                     
-                    if not (position[1] - bullet_texture.shape[1] <= pos[1] <= position[1] + enemy_texture.shape[1] and position[0] - bullet_texture.shape[0] <= pos[0] <= position[0] + enemy_texture.shape[0]):
+                    if not (position[1] - bullet_texture.shape[1] <= pos[1] <= position[1] + bullet_texture.shape[1] + enemy_texture.shape[1] and position[0] - bullet_texture.shape[0] <= pos[0] <= position[0] + bullet_texture.shape[0] + enemy_texture.shape[0]):
                         continue
                     else:
                         try:
@@ -128,16 +137,38 @@ def create_frame(background, ship, enemy, effect):
                             flatten_bullet_coords_cropped = np.delete(flatten_bullet_coords, np.argwhere(flatten_bullet_coords == np.array((-1,-1), dtype="i,i")))
                             flatten_enemy_coords_cropped = np.delete(flatten_enemy_coords, np.argwhere(flatten_enemy_coords == np.array((-1,-1), dtype="i,i")))
                             if check_intersection(flatten_bullet_coords_cropped, flatten_enemy_coords_cropped):
-                                explosion_position = (position[0] - (effect.effect_size["explosive"][0] - enemy_texture.shape[0]) // 2,
-                                                      position[1] - (effect.effect_size["explosive"][1] - enemy_texture.shape[1]) // 2)
-                                effect.explode(explosion_position)
                                 deleted_bullet.append(j)
                                 hit = True
                                 break
                         except Exception as e:
                             continue
+                        
+                # Check if enemy hits ship
+                if not (ship_position[1] - enemy_texture.shape[1] <= position[1] < ship_position[1] + enemy_texture.shape[1] + ship_texture.shape[1] and ship_position[0] - enemy_texture.shape[0] <= position[0] < ship_position[0] + enemy_texture.shape[0] + ship_texture.shape[0]):
+                    pass
+                elif not ship.hit:
+                    try:
+                        ship_coords = np.copy(background.coordinate[ship_position[0] : ship_position[0] + ship_texture.shape[0], ship_position[1] : ship_position[1] + ship_texture.shape[1]])
+                        enemy_coords = np.copy(background.coordinate[position[0] : position[0] + enemy_texture.shape[0], position[1] : position[1] + enemy_texture.shape[1]])
+                        ship_coords[np.where((ship_texture == [0, 0, 0]).all(axis=2))] = (-1,-1)
+                        enemy_coords[np.where((enemy_texture == [0, 0, 0]).all(axis=2))] = (-1,-1)
+                        flatten_ship_coords = np.concatenate(ship_coords)
+                        flatten_enemy_coords = np.concatenate(enemy_coords)
+                        flatten_ship_coords_cropped = np.delete(flatten_ship_coords, np.argwhere(flatten_ship_coords == np.array((-1,-1), dtype="i,i")))
+                        flatten_enemy_coords_cropped = np.delete(flatten_enemy_coords, np.argwhere(flatten_enemy_coords == np.array((-1,-1), dtype="i,i")))
+                        if check_intersection(flatten_ship_coords_cropped, flatten_enemy_coords_cropped):
+                            ship.hit = True
+                            hit = True
+                            ship_explosion_position = (ship_position[0] - (effect.effect_size["death_ship"][0] - ship_texture.shape[0]) // 2,
+                                                       ship_position[1] - (effect.effect_size["death_ship"][1] - ship_texture.shape[1]) // 2)
+                            effect.destroy_ship(ship_explosion_position)
+                    except Exception as e:
+                        pass
                     
                 if hit:
+                    explosion_position = (position[0] - (effect.effect_size["explosive"][0] - enemy_texture.shape[0]) // 2,
+                                          position[1] - (effect.effect_size["explosive"][1] - enemy_texture.shape[1]) // 2)
+                    effect.explode(explosion_position)
                     deleted_enemy.append((number, t_value))
                     continue
                     

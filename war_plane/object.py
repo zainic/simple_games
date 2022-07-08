@@ -32,7 +32,7 @@ class Background:
         """
         self.full_background = cv2.imread(os.path.join(".", "texture", "background.png"))
         self.background = self.full_background[:WINDOW_HEIGHT, :]
-        self.coordinate = np.array([[tuple((i,j)) for i in range(WINDOW_HEIGHT)] for j in range(WINDOW_WIDTH)], dtype='i,i')
+        self.coordinate = np.array([[tuple((i,j)) for i in range(WINDOW_WIDTH)] for j in range(WINDOW_HEIGHT)], dtype='i,i')
         self.i = int(0)
         
     def move_background(self, step):
@@ -64,6 +64,8 @@ class Ship:
         self.bullet_texture = {}
         self.bullet_texture["main"] = cv2.imread(os.path.join(".", "texture", "main_bullet.png"))
         self.bullet_texture["secondary"] = cv2.imread(os.path.join(".", "texture", "secondary_bullet.png"))
+        
+        self.hit = False
         
         self.current_level = 1
         """
@@ -208,18 +210,24 @@ class Effect:
         """
         self.full_effects = {}
         self.full_effects["explosive"] = cv2.imread(os.path.join(".", "texture", "explosive.png"))
+        self.full_effects["death_ship"] = cv2.imread(os.path.join(".", "texture", "death_ship.png"))
         
         self.effects = {}
-        self.effects["explosive"] = np.split(self.full_effects["explosive"], 30)
+        self.effects["explosive"] = np.split(self.full_effects["explosive"], 
+                                             self.full_effects["explosive"].shape[0]//self.full_effects["explosive"].shape[1])
+        self.effects["death_ship"] = np.split(self.full_effects["death_ship"], 
+                                             self.full_effects["death_ship"].shape[0]//self.full_effects["death_ship"].shape[1])
         
         self.effect_size = {}
         self.effect_size["explosive"] = self.effects["explosive"][0].shape[:2]
+        self.effect_size["death_ship"] = self.effects["death_ship"][0].shape[:2]
         
         """
         Initial condition
         """ 
         self.effect_coordinates = {}
         self.effect_coordinates["explosive"] = {}
+        self.effect_coordinates["death_ship"] = {}
         
     def next_state(self):
         """
@@ -243,5 +251,13 @@ class Effect:
         Args:
             coordinates (tuple): coordinates of explosion in pixel
         """
-        self.effect_coordinates["explosive"][coordinates] = 1
-        
+        self.effect_coordinates["explosive"][coordinates] = 0
+    
+    def destroy_ship(self, coordinates):
+        """
+        Destroy explosion in 
+
+        Args:
+            coordinates (tuple): coordinates of explosion in pixel
+        """
+        self.effect_coordinates["death_ship"][coordinates] = 0
