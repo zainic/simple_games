@@ -1,3 +1,4 @@
+from ast import excepthandler
 from telnetlib import KERMIT
 from matplotlib import is_interactive
 import numpy as np
@@ -23,7 +24,7 @@ def check_intersection(array1, array2):
     
     return is_intersect
 
-def create_frame(background, ship, enemy):
+def create_frame(background, ship, enemy, effect):
     """
     Create one frame from the condition
 
@@ -31,6 +32,7 @@ def create_frame(background, ship, enemy):
         background (class Background): background of the game
         ship (class Ship): ship that player control
         enemy (class Enemy): enemy that attack player
+        effect (class Effect): effect of things happen
 
     Returns:
         ndarray: image of the current condition
@@ -49,6 +51,18 @@ def create_frame(background, ship, enemy):
     # Get enemy texture
     enemy_texture = np.copy(enemy.current_enemy_texture)
     
+    # Show effect
+    for key in effect.effect_coordinates.keys():
+        effect_texture = np.copy(effect.effects[key])
+        for position, i in effect.effect_coordinates[key].items():
+            try:
+                part_fx = np.copy(frame[position[0] : position[0] + effect_texture[i].shape[0], 
+                                        position[1] : position[1] + effect_texture[i].shape[1]])
+                part_fx_overlay = cv2.addWeighted(part_fx, 1, effect_texture[i], 1, 0)
+                frame[position[0] : position[0] + effect_texture[i].shape[0], position[1] : position[1] + effect_texture[i].shape[1]] = part_fx_overlay
+            except:
+                continue
+        
     # Show bullet
     deleted_bullet = []
     texture = np.copy(ship.bullet_texture["main"])
@@ -114,10 +128,14 @@ def create_frame(background, ship, enemy):
                             flatten_bullet_coords_cropped = np.delete(flatten_bullet_coords, np.argwhere(flatten_bullet_coords == np.array((-1,-1), dtype="i,i")))
                             flatten_enemy_coords_cropped = np.delete(flatten_enemy_coords, np.argwhere(flatten_enemy_coords == np.array((-1,-1), dtype="i,i")))
                             if check_intersection(flatten_bullet_coords_cropped, flatten_enemy_coords_cropped):
+                                explosion_position = (position[0] - (effect.effect_size["explosive"][0] - enemy_texture.shape[0]) // 2,
+                                                      position[1] - (effect.effect_size["explosive"][1] - enemy_texture.shape[1]) // 2)
+                                print(explosion_position)
+                                effect.explode(explosion_position)
                                 deleted_bullet.append(j)
                                 hit = True
                                 break
-                        except:
+                        except Exception as e:
                             continue
                     
                 if hit:
@@ -143,7 +161,7 @@ def create_frame(background, ship, enemy):
                 except Exception as e:
                     if position[0] >= 700:
                         deleted_enemy.append((number, t_value))
-                        
+
     for number, t_value in sorted(deleted_enemy, key = lambda a : a[1], reverse=True):
         T = enemy.enemies_position_in_t[number]
         enemy.enemies_position_in_t[number] = np.delete(T, np.where(T == t_value))
