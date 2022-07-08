@@ -65,7 +65,7 @@ class Ship:
         self.bullet_texture["main"] = cv2.imread(os.path.join(".", "texture", "main_bullet.png"))
         self.bullet_texture["secondary"] = cv2.imread(os.path.join(".", "texture", "secondary_bullet.png"))
         
-        self.current_level = 3
+        self.current_level = 1
         """
         Initial position and hitbox of the ship
         """
