@@ -261,3 +261,23 @@ class Effect:
             coordinates (tuple): coordinates of explosion in pixel
         """
         self.effect_coordinates["death_ship"][coordinates] = 0
+        
+    def move_effect(self, step):
+        """
+        Move the effect texture following the background
+
+        Args:
+            step (int): step of movement
+        """
+        changed_state = []
+        
+        for key in self.effect_coordinates.keys():
+            for coord in self.effect_coordinates[key].keys():
+                next_coord = (coord[0] + step, coord[1])
+                changed_state.append((key, coord, next_coord))
+        
+        for key, coord, next_coord in changed_state:
+            self.effect_coordinates[key][next_coord] = self.effect_coordinates[key][coord]
+            self.effect_coordinates[key].pop(coord)
+            
+            

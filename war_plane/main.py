@@ -57,6 +57,7 @@ def main():
         ship.move_ship(direction)
         background.move_background(1)
         effect.next_state()
+        effect.move_effect(1)
         
         enemies_alive = np.sum([len(enemies) for enemies in enemy.enemies_position_in_t])
         if enemies_alive == 0:
