@@ -130,7 +130,6 @@ def create_frame(background, ship, enemy, effect):
                             if check_intersection(flatten_bullet_coords_cropped, flatten_enemy_coords_cropped):
                                 explosion_position = (position[0] - (effect.effect_size["explosive"][0] - enemy_texture.shape[0]) // 2,
                                                       position[1] - (effect.effect_size["explosive"][1] - enemy_texture.shape[1]) // 2)
-                                print(explosion_position)
                                 effect.explode(explosion_position)
                                 deleted_bullet.append(j)
                                 hit = True
@@ -142,18 +141,6 @@ def create_frame(background, ship, enemy, effect):
                     deleted_enemy.append((number, t_value))
                     continue
                     
-                    # try:
-                    #     bullet_coords = np.copy(background.coordinate[pos[0] : pos[0] + bullet_texture.shape[0], pos[1] : pos[1] + bullet_texture.shape[1]])
-                    #     enemy_coords = np.copy(background.coordinate[position[0] : position[0] + enemy_texture.shape[0], position[1] : position[1] + enemy_texture.shape[1]])
-                    #     flatten_bullet_coords = np.concatenate(bullet_coords)
-                    #     flatten_enemy_coords = np.concatenate(enemy_coords)
-                    #     if check_intersection(flatten_bullet_coords, flatten_enemy_coords):
-                    #         deleted_bullet.append(j)
-                    #         break
-                        
-                    # except Exception as e:
-                    #     continue
-                
                 try:
                     part_minus_enemy = np.copy(frame[position[0] : position[0] + enemy_texture.shape[0], position[1] : position[1] + enemy_texture.shape[1]])
                     part_minus_enemy[np.where((enemy_texture != [0, 0, 0]).all(axis=2))] = [0, 0, 0]
