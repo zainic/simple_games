@@ -20,6 +20,7 @@ def main():
     background = Background()
     ship = Ship()
     enemy = Enemy()
+    effect = Effect()
     
     listener = keyboard.Listener(on_press=on_pressed, on_release=on_released)
     listener.start()
@@ -32,10 +33,10 @@ def main():
         delay_shoot -= 1
         
         try:
-            frame = create_frame(background, ship, enemy)
+            frame = create_frame(background, ship, enemy, effect)
         except Exception as e:
             ship.move_ship(np.negative(direction))
-            frame = create_frame(background, ship, enemy)
+            frame = create_frame(background, ship, enemy, effect)
         
         showed_frame = frame[20:REAL_WINDOW_HEIGHT + 20, 10:REAL_WINDOW_WIDTH + 10]
         
@@ -50,6 +51,7 @@ def main():
         
         ship.move_ship(direction)
         background.move_background(1)
+        effect.next_state()
         
         enemies_alive = np.sum([len(enemies) for enemies in enemy.enemies_position_in_t])
         if enemies_alive == 0:
