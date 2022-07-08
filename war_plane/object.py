@@ -84,8 +84,8 @@ class Ship:
         self.start_position_of_bullet["2"] = (WINDOW_HEIGHT - 64 - 40 + 39, WINDOW_WIDTH//2 - 32 + 12)
         self.start_position_of_bullet["3"] = (WINDOW_HEIGHT - 64 - 40 + 39, WINDOW_WIDTH//2 - 32 + 49)
         
-        self.main_bullet = []
-        self.secondary_bullet = []
+        self.main_bullet = np.array([], dtype='i,i')
+        self.secondary_bullet = np.array([], dtype='i,i')
     
     def move_ship(self, direction):
         """
@@ -119,19 +119,19 @@ class Ship:
         Shoot the bullet from the ship
         """
         
-        main_bullet = np.array(self.start_position_of_bullet["1"])
-        secondary_bullet_1 = np.array(self.start_position_of_bullet["2"])
-        secondary_bullet_2 = np.array(self.start_position_of_bullet["3"])
+        main_bullet = np.array([self.start_position_of_bullet["1"]], dtype='i,i')
+        secondary_bullet_1 = np.array([self.start_position_of_bullet["2"]], dtype='i,i')
+        secondary_bullet_2 = np.array([self.start_position_of_bullet["3"]], dtype='i,i')
         
         if self.current_level == 1:
-            self.main_bullet.insert(0, main_bullet)
+            self.main_bullet = np.concatenate([main_bullet, self.main_bullet])
         elif self.current_level == 2:
-            self.secondary_bullet.insert(0, secondary_bullet_1)
-            self.secondary_bullet.insert(0, secondary_bullet_2)
+            self.secondary_bullet = np.concatenate([secondary_bullet_1, self.secondary_bullet])
+            self.secondary_bullet = np.concatenate([secondary_bullet_2, self.secondary_bullet])
         elif self.current_level >= 3:
             self.main_bullet.insert(0, main_bullet)
-            self.secondary_bullet.insert(0, secondary_bullet_1)
-            self.secondary_bullet.insert(0, secondary_bullet_2)
+            self.secondary_bullet = np.concatenate([secondary_bullet_1, self.secondary_bullet])
+            self.secondary_bullet = np.concatenate([secondary_bullet_2, self.secondary_bullet])
         
     
 class Enemy:
