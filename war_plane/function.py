@@ -50,6 +50,7 @@ def create_frame(background, ship, enemy):
     enemy_texture = np.copy(enemy.current_enemy_texture)
     
     # Show bullet
+    deleted_bullet = []
     texture = np.copy(ship.bullet_texture["main"])
     for i, position in enumerate(copy_of_main_bullets_pos):
         try:
@@ -58,7 +59,7 @@ def create_frame(background, ship, enemy):
             frame[position[0] : position[0] + texture.shape[0], position[1] : position[1] + texture.shape[1]] = part_minus_bullet + texture
             ship.main_bullet[i] = tuple(np.array([ship.main_bullet[i][0], ship.main_bullet[i][1]]) + UP * 6)
         except Exception as e:
-            ship.main_bullet = np.delete(ship.main_bullet, i)
+            deleted_bullet.append(i)
     
     texture = np.copy(ship.bullet_texture["secondary"])
     for i, position in enumerate(copy_of_secondary_bullets_pos):
@@ -68,7 +69,7 @@ def create_frame(background, ship, enemy):
             frame[position[0] : position[0] + texture.shape[0], position[1] : position[1] + texture.shape[1]] = part_minus_bullet + texture
             ship.secondary_bullet[i] = tuple(np.array([ship.secondary_bullet[i][0], ship.secondary_bullet[i][1]]) + UP * 6)
         except Exception as e:
-            ship.secondary_bullet = np.delete(ship.secondary_bullet, i)
+            deleted_bullet.append(i + len(copy_of_main_bullets_pos))
     
     # Show ship
     texture = np.copy(ship.ship_texture["lv" + str(ship.current_level)])
@@ -78,10 +79,7 @@ def create_frame(background, ship, enemy):
     
     # Show enemies ship
     enemies_alive = np.sum([len(enemies) for enemies in enemy.enemies_position_in_t])
-    deleted_bullet = []
-    
-    copy_of_main_bullets_pos = np.copy(ship.main_bullet)
-    copy_of_secondary_bullets_pos = np.copy(ship.secondary_bullet)
+    deleted_enemy = []
         
     bullet_positions = np.concatenate([copy_of_main_bullets_pos, copy_of_secondary_bullets_pos])
     
@@ -93,8 +91,7 @@ def create_frame(background, ship, enemy):
                 
                 if position[0] < 0 or position[0] >= 700:
                     if position[0] >= 700:
-                        T = enemy.enemies_position_in_t[number]
-                        enemy.enemies_position_in_t[number] = np.delete(T, np.where(T == t_value))
+                        deleted_enemy.append((number, t_value))
                     continue
                 
                 for j, pos in enumerate(bullet_positions):
@@ -104,25 +101,27 @@ def create_frame(background, ship, enemy):
                     else:
                         bullet_texture = np.copy(ship.bullet_texture["secondary"])
                     
-                    if not (position[1] - bullet_texture.shape[1] <= pos[1] <= position[1] + enemy_texture.shape[1] and position[0] <= pos[0] <= position[0] + enemy_texture.shape[0]):
+                    if not (position[1] - bullet_texture.shape[1] <= pos[1] <= position[1] + enemy_texture.shape[1] and position[0] - bullet_texture.shape[0] <= pos[0] <= position[0] + enemy_texture.shape[0]):
                         continue
                     else:
-                        bullet_coords = np.copy(background.coordinate[pos[0] : pos[0] + bullet_texture.shape[0], pos[1] : pos[1] + bullet_texture.shape[1]])
-                        enemy_coords = np.copy(background.coordinate[position[0] : position[0] + enemy_texture.shape[0], position[1] : position[1] + enemy_texture.shape[1]])
-                        bullet_coords[np.where((bullet_texture == [0, 0, 0]).all(axis=2))] = (-1,-1)
-                        enemy_coords[np.where((enemy_texture == [0, 0, 0]).all(axis=2))] = (-1,-1)
-                        flatten_bullet_coords = np.concatenate(bullet_coords)
-                        flatten_enemy_coords = np.concatenate(enemy_coords)
-                        flatten_bullet_coords = np.delete(flatten_bullet_coords, np.argwhere(flatten_bullet_coords == np.array((-1,-1), dtype="i,i")))
-                        flatten_enemy_coords = np.delete(flatten_enemy_coords, np.argwhere(flatten_enemy_coords == np.array((-1,-1), dtype="i,i")))
-                        if check_intersection(flatten_bullet_coords, flatten_enemy_coords):
-                            deleted_bullet.append(j)
-                            hit = True
-                            break
+                        try:
+                            bullet_coords = np.copy(background.coordinate[pos[0] : pos[0] + bullet_texture.shape[0], pos[1] : pos[1] + bullet_texture.shape[1]])
+                            enemy_coords = np.copy(background.coordinate[position[0] : position[0] + enemy_texture.shape[0], position[1] : position[1] + enemy_texture.shape[1]])
+                            bullet_coords[np.where((bullet_texture == [0, 0, 0]).all(axis=2))] = (-1,-1)
+                            enemy_coords[np.where((enemy_texture == [0, 0, 0]).all(axis=2))] = (-1,-1)
+                            flatten_bullet_coords = np.concatenate(bullet_coords)
+                            flatten_enemy_coords = np.concatenate(enemy_coords)
+                            flatten_bullet_coords_cropped = np.delete(flatten_bullet_coords, np.argwhere(flatten_bullet_coords == np.array((-1,-1), dtype="i,i")))
+                            flatten_enemy_coords_cropped = np.delete(flatten_enemy_coords, np.argwhere(flatten_enemy_coords == np.array((-1,-1), dtype="i,i")))
+                            if check_intersection(flatten_bullet_coords_cropped, flatten_enemy_coords_cropped):
+                                deleted_bullet.append(j)
+                                hit = True
+                                break
+                        except:
+                            continue
                     
                 if hit:
-                    T = enemy.enemies_position_in_t[number]
-                    enemy.enemies_position_in_t[number] = np.delete(T, np.where(T == t_value))
+                    deleted_enemy.append((number, t_value))
                     continue
                     
                     # try:
@@ -143,14 +142,17 @@ def create_frame(background, ship, enemy):
                     frame[position[0] : position[0] + enemy_texture.shape[0], position[1] : position[1] + enemy_texture.shape[1]] = part_minus_enemy + enemy_texture
                 except Exception as e:
                     if position[0] >= 700:
-                        T = enemy.enemies_position_in_t[number]
-                        enemy.enemies_position_in_t[number] = np.delete(T, np.where(T == t_value))
-    
+                        deleted_enemy.append((number, t_value))
+                        
+    for number, t_value in sorted(deleted_enemy, key = lambda a : a[1], reverse=True):
+        T = enemy.enemies_position_in_t[number]
+        enemy.enemies_position_in_t[number] = np.delete(T, np.where(T == t_value))
+
     for i in sorted(deleted_bullet, reverse=True):
         if i < len(copy_of_main_bullets_pos):
             ship.main_bullet = np.delete(ship.main_bullet, i)
         else:
-            ship.secondary_bullet = np.delete(ship.secondary_bullet, i)
+            ship.secondary_bullet = np.delete(ship.secondary_bullet, i - len(copy_of_main_bullets_pos))
     
     return frame
 

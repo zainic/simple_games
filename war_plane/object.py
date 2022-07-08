@@ -65,7 +65,7 @@ class Ship:
         self.bullet_texture["main"] = cv2.imread(os.path.join(".", "texture", "main_bullet.png"))
         self.bullet_texture["secondary"] = cv2.imread(os.path.join(".", "texture", "secondary_bullet.png"))
         
-        self.current_level = 1
+        self.current_level = 3
         """
         Initial position and hitbox of the ship
         """
@@ -126,12 +126,12 @@ class Ship:
         if self.current_level == 1:
             self.main_bullet = np.concatenate([main_bullet, self.main_bullet])
         elif self.current_level == 2:
-            self.secondary_bullet = np.concatenate([secondary_bullet_1, self.secondary_bullet])
             self.secondary_bullet = np.concatenate([secondary_bullet_2, self.secondary_bullet])
+            self.secondary_bullet = np.concatenate([secondary_bullet_1, self.secondary_bullet])
         elif self.current_level >= 3:
-            self.main_bullet.insert(0, main_bullet)
-            self.secondary_bullet = np.concatenate([secondary_bullet_1, self.secondary_bullet])
+            self.main_bullet = np.concatenate([main_bullet, self.main_bullet])
             self.secondary_bullet = np.concatenate([secondary_bullet_2, self.secondary_bullet])
+            self.secondary_bullet = np.concatenate([secondary_bullet_1, self.secondary_bullet])
         
     
 class Enemy:
@@ -197,6 +197,13 @@ class Enemy:
         for i, _ in enumerate(self.enemies_position_in_t):
             self.enemies_position_in_t[i] += step
         
-class Destruction:
+class Effect:
+    """
+    Create state of effect object like destruction of the ship
+    """
     def __init__(self):
-        pass
+        """
+        Import the texture of effect
+        it forms list of event image
+        """
+        self.full_effect = {}
