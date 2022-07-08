@@ -58,7 +58,6 @@ def create_frame(background, ship, enemy):
             frame[position[0] : position[0] + texture.shape[0], position[1] : position[1] + texture.shape[1]] = part_minus_bullet + texture
             ship.main_bullet[i] = tuple(np.array([ship.main_bullet[i][0], ship.main_bullet[i][1]]) + UP * 6)
         except Exception as e:
-            print(e)
             ship.main_bullet = np.delete(ship.main_bullet, i)
     
     texture = np.copy(ship.bullet_texture["secondary"])
@@ -69,7 +68,6 @@ def create_frame(background, ship, enemy):
             frame[position[0] : position[0] + texture.shape[0], position[1] : position[1] + texture.shape[1]] = part_minus_bullet + texture
             ship.secondary_bullet[i] = tuple(np.array([ship.secondary_bullet[i][0], ship.secondary_bullet[i][1]]) + UP * 6)
         except Exception as e:
-            print(e)
             ship.secondary_bullet = np.delete(ship.secondary_bullet, i)
     
     # Show ship
@@ -91,6 +89,7 @@ def create_frame(background, ship, enemy):
         for number, enemies_path in enumerate(enemies_position):
             for i, t_value in enumerate(enemies_path):
                 position = np.int32(enemy.path[str(enemy.number_path[number])](t_value))
+                hit = False
                 
                 if position[0] < 0 or position[0] >= 700:
                     if position[0] >= 700:
@@ -105,22 +104,29 @@ def create_frame(background, ship, enemy):
                     else:
                         bullet_texture = np.copy(ship.bullet_texture["secondary"])
                     
-                    if not (position[1] - 5 <= pos[1] <= position[1] + 25 and position[0] <= pos[0] <= position[0] + enemy_texture.shape[0]):
+                    if not (position[1] <= pos[1] <= position[1] + enemy_texture.shape[1] and position[0] <= pos[0] <= position[0] + enemy_texture.shape[0]):
                         continue
+                    else:
+                        deleted_bullet.append(j)
+                        hit = True
+                        break
                     
-                    try:
-                        bullet_coords = np.copy(background.coordinate[pos[0] : pos[0] + bullet_texture.shape[0], pos[1] : pos[1] + bullet_texture.shape[1]])
-                        enemy_coords = np.copy(background.coordinate[position[0] : position[0] + enemy_texture.shape[0], position[1] : position[1] + enemy_texture.shape[1]])
-                        flatten_bullet_coords = np.concatenate(bullet_coords)
-                        flatten_enemy_coords = np.concatenate(enemy_coords)
-                        if check_intersection(flatten_bullet_coords, flatten_enemy_coords):
-                            deleted_bullet.append(j)
-                            print("HIT")
-                            break
+                if hit:
+                    T = enemy.enemies_position_in_t[number]
+                    enemy.enemies_position_in_t[number] = np.delete(T, np.where(T == t_value))
+                    continue
+                    
+                    # try:
+                    #     bullet_coords = np.copy(background.coordinate[pos[0] : pos[0] + bullet_texture.shape[0], pos[1] : pos[1] + bullet_texture.shape[1]])
+                    #     enemy_coords = np.copy(background.coordinate[position[0] : position[0] + enemy_texture.shape[0], position[1] : position[1] + enemy_texture.shape[1]])
+                    #     flatten_bullet_coords = np.concatenate(bullet_coords)
+                    #     flatten_enemy_coords = np.concatenate(enemy_coords)
+                    #     if check_intersection(flatten_bullet_coords, flatten_enemy_coords):
+                    #         deleted_bullet.append(j)
+                    #         break
                         
-                    except Exception as e:
-                        print(e)
-                        continue
+                    # except Exception as e:
+                    #     continue
                 
                 try:
                     part_minus_enemy = np.copy(frame[position[0] : position[0] + enemy_texture.shape[0], position[1] : position[1] + enemy_texture.shape[1]])
