@@ -39,17 +39,24 @@ def main():
     
     ship_shoot = mixer.Sound(os.path.join(".","sound","ship_shoot.mp3"))
     
+    st = time.time()
+    
     while not START:
-        st = time.time()
         frame = create_main_menu_frame(background)
-        ed = time.time()
         
         showed_frame = np.copy(frame[20:REAL_WINDOW_HEIGHT + 20, 10:REAL_WINDOW_WIDTH + 10])
         
-        cv2.putText(showed_frame, "fps : " + str(round(1/(ed - st))), (10, REAL_WINDOW_HEIGHT - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255), 1, cv2.LINE_AA)
+        ed = time.time()
+        if ed - st <= 1/60:
+            time.sleep(1/60 - (ed - st))
+            fps = 60
+        else:
+            fps = round(1/(ed - st))
+        cv2.putText(showed_frame, "fps : " + str(fps), (10, REAL_WINDOW_HEIGHT - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255), 1, cv2.LINE_AA)
+        st = time.time()
         
         cv2.imshow("WarShip Game", showed_frame)
-        key = cv2.waitKey(10) & 0xff
+        key = cv2.waitKey(1) & 0xff
         
         if EXIT:
             break
@@ -88,14 +95,17 @@ def main():
                 delay_start = 30
 
         ed = time.time()
-        
-        cv2.putText(showed_frame, "fps : " + str(round(1/(ed - st))), (10, REAL_WINDOW_HEIGHT - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255), 1, cv2.LINE_AA)
+        if ed - st <= 1/60:
+            time.sleep(1/60 - (ed - st))
+            fps = 60
+        else:
+            fps = round(1/(ed - st))
+        cv2.putText(showed_frame, "fps : " + str(fps), (10, REAL_WINDOW_HEIGHT - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255), 1, cv2.LINE_AA)
+        st = time.time()
         
         cv2.imshow("WarShip Game", showed_frame)
         
-        st = time.time()
-        
-        key = cv2.waitKey(10) & 0xff
+        key = cv2.waitKey(1) & 0xff
         
         direction = get_direction_from_keys(pressed_keys)
         
@@ -121,7 +131,7 @@ def main():
         EXIT = get_exit_status(key)
         
     listener.stop()
-    ed = time.time()
+    
 
 if __name__ == "__main__":
     main()
