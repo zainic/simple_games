@@ -7,6 +7,11 @@ import os, sys
 
 from object import *
 from pynput import keyboard
+from pygame import mixer
+
+mixer.init()
+enemy_destroyed = mixer.Sound(os.path.join(".","sound","enemy_explode.mp3"))
+ship_explode = mixer.Sound(os.path.join(".","sound","ship_explode.mp3"))
 
 def put_text_in_the_middle(frame, text = "Sample Text", size = 1, size_stroke=1, style = cv2.FONT_HERSHEY_SIMPLEX, line = cv2.LINE_AA, add_height=0):
     """
@@ -174,6 +179,7 @@ def create_frame(background, ship, enemy, effect):
                         flatten_enemy_coords_cropped = np.delete(flatten_enemy_coords, np.argwhere(flatten_enemy_coords == np.array((-1,-1), dtype="i,i")))
                         if check_intersection(flatten_ship_coords_cropped, flatten_enemy_coords_cropped):
                             ship.hit = True
+                            mixer.Sound.play(ship_explode)
                             hit = True
                             ship_explosion_position = (ship_position[0] - (effect.effect_size["death_ship"][0] - ship_texture.shape[0]) // 2,
                                                        ship_position[1] - (effect.effect_size["death_ship"][1] - ship_texture.shape[1]) // 2)
@@ -185,6 +191,7 @@ def create_frame(background, ship, enemy, effect):
                     explosion_position = (position[0] - (effect.effect_size["explosive"][0] - enemy_texture.shape[0]) // 2,
                                           position[1] - (effect.effect_size["explosive"][1] - enemy_texture.shape[1]) // 2)
                     effect.explode(explosion_position)
+                    mixer.Sound.play(enemy_destroyed)
                     deleted_enemy.append((number, t_value))
                     continue
                     

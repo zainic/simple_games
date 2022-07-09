@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 import os, sys
+from pygame import mixer
 from pynput import keyboard
 
 from object import *
@@ -31,6 +32,12 @@ def main():
     delay_shoot = 10
     delay_start = 30
     
+    mixer.init()
+    mixer.music.load(os.path.join(".","sound","menu_music.mp3"))
+    mixer.music.play(-1)
+    
+    ship_shoot = mixer.Sound(os.path.join(".","sound","ship_shoot.mp3"))
+    
     while not START:
         frame = create_main_menu_frame(background)
         showed_frame = np.copy(frame[20:REAL_WINDOW_HEIGHT + 20, 10:REAL_WINDOW_WIDTH + 10])
@@ -45,6 +52,9 @@ def main():
         
         START = get_start_status(pressed_keys)
         EXIT = get_exit_status(key)
+    
+    mixer.music.load(os.path.join(".","sound","play_music.mp3"))
+    mixer.music.play(-1)
     
     while not EXIT:
         delay_shoot -= 1
@@ -79,6 +89,7 @@ def main():
         
         if is_shooting(pressed_keys) and delay_shoot <= 0:
             ship.shoot_bullet()
+            mixer.Sound.play(ship_shoot)
             delay_shoot = 15
         
         ship.move_ship(direction)
