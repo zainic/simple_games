@@ -31,6 +31,7 @@ class Background:
         Import the background from local file and preprocessing
         """
         self.full_background = cv2.imread(os.path.join(".", "texture", "background.png"))
+        self.logo = cv2.imread(os.path.join(".", "texture", "logo.png"))
         self.background = self.full_background[:WINDOW_HEIGHT, :]
         self.coordinate = np.array([[tuple((i,j)) for i in range(WINDOW_WIDTH)] for j in range(WINDOW_HEIGHT)], dtype='i,i')
         self.i = int(0)

@@ -25,7 +25,7 @@ def put_text_in_the_middle(frame, text = "Sample Text", size = 1, size_stroke=1,
         ndarray: image with the text in it
     """
     text_width, text_height = cv2.getTextSize(text, style, size, line)[0]
-    CenterCoordinates = (frame.shape[1] // 2 - text_width // 2 ,
+    CenterCoordinates = (frame.shape[1] // 2 - text_width // 2 + 8,
                          frame.shape[0] // 2 + text_height // 2 + int(add_height))
     cv2.putText(frame, text, CenterCoordinates, style, size, (255,255,255), size_stroke, line)
     return frame
@@ -205,6 +205,30 @@ def create_frame(background, ship, enemy, effect):
             ship.main_bullet = np.delete(ship.main_bullet, i)
         else:
             ship.secondary_bullet = np.delete(ship.secondary_bullet, i - len(copy_of_main_bullets_pos))
+    
+    return frame
+
+def create_main_menu_frame(background):
+    """
+    Create one frame of main menu
+
+    Args:
+        background (class Background): background of the game
+
+    Returns:
+        ndarray: image of the menu
+    """
+    frame = np.copy(background.background)
+    
+    logo = background.logo 
+    
+    position = (frame.shape[0] // 2 - logo.shape[0] // 2 - 50,frame.shape[1] // 2 - logo.shape[1] // 2)
+    
+    part_logo = np.copy(frame[position[0] : position[0] + logo.shape[0], position[1] : position[1] + logo.shape[1]])
+    part_logo_overlay = cv2.addWeighted(part_logo, 1, logo, 1, 0)
+    frame[position[0] : position[0] + logo.shape[0], position[1] : position[1] + logo.shape[1]] = part_logo_overlay
+    
+    frame = put_text_in_the_middle(frame, "Press space to START the game", size=1,  size_stroke=2, add_height=100)
     
     return frame
 

@@ -26,9 +26,25 @@ def main():
     listener.start()
     
     EXIT = False
+    START = False
     
     delay_shoot = 10
     delay_start = 30
+    
+    while not START:
+        frame = create_main_menu_frame(background)
+        showed_frame = np.copy(frame[20:REAL_WINDOW_HEIGHT + 20, 10:REAL_WINDOW_WIDTH + 10])
+        
+        cv2.imshow("WarShip Game", showed_frame)
+        key = cv2.waitKey(10) & 0xff
+        
+        if EXIT:
+            break
+        
+        background.move_background(1)
+        
+        START = get_start_status(pressed_keys)
+        EXIT = get_exit_status(key)
     
     while not EXIT:
         delay_shoot -= 1
@@ -44,12 +60,12 @@ def main():
         cv2.putText(showed_frame, "score : " + str(background.score), (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 1, cv2.LINE_AA)
         
         if ship.hit:
-            put_text_in_the_middle(showed_frame, "GAME OVER", size=2)
-            put_text_in_the_middle(showed_frame, "Press esc to exit the game", size=1, add_height=50)
-            put_text_in_the_middle(showed_frame, "Press space to restart the game", size=1, add_height=90)
+            put_text_in_the_middle(showed_frame, "GAME OVER", size=2, size_stroke=2)
+            put_text_in_the_middle(showed_frame, "Press esc to EXIT the game", size=1, add_height=50)
+            put_text_in_the_middle(showed_frame, "Press space to RESTART the game", size=1, add_height=90)
             delay_start -= 1
             if get_start_status(pressed_keys) and delay_start <= 0:
-                background = Background()
+                background.score = 0
                 ship = Ship()
                 enemy = Enemy()
                 effect = Effect()
