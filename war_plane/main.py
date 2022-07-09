@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 import os, sys
+import time
 from pygame import mixer
 from pynput import keyboard
 
@@ -39,8 +40,13 @@ def main():
     ship_shoot = mixer.Sound(os.path.join(".","sound","ship_shoot.mp3"))
     
     while not START:
+        st = time.time()
         frame = create_main_menu_frame(background)
+        ed = time.time()
+        
         showed_frame = np.copy(frame[20:REAL_WINDOW_HEIGHT + 20, 10:REAL_WINDOW_WIDTH + 10])
+        
+        cv2.putText(showed_frame, "fps : " + str(round(1/(ed - st))), (10, REAL_WINDOW_HEIGHT - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255), 1, cv2.LINE_AA)
         
         cv2.imshow("WarShip Game", showed_frame)
         key = cv2.waitKey(10) & 0xff
@@ -80,8 +86,14 @@ def main():
                 enemy = Enemy()
                 effect = Effect()
                 delay_start = 30
+
+        ed = time.time()
+        
+        cv2.putText(showed_frame, "fps : " + str(round(1/(ed - st))), (10, REAL_WINDOW_HEIGHT - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255), 1, cv2.LINE_AA)
         
         cv2.imshow("WarShip Game", showed_frame)
+        
+        st = time.time()
         
         key = cv2.waitKey(10) & 0xff
         
@@ -109,6 +121,7 @@ def main():
         EXIT = get_exit_status(key)
         
     listener.stop()
+    ed = time.time()
 
 if __name__ == "__main__":
     main()
