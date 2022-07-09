@@ -262,3 +262,19 @@ def get_exit_status(key):
         return True
     
     return False
+
+def get_start_status(keys):
+    """
+    function that return exit status from key pressed
+
+    Args:
+        key (int): key that got from cv2.waitKey()
+
+    Returns:
+        bool: exit status
+    """
+    
+    if keyboard.Key.space in keys:
+        return True
+    
+    return False
