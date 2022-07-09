@@ -164,12 +164,25 @@ class Enemy:
         self.path["5"] = lambda t : (t, 10 + 310 - 250 - 10)
         self.path["6"] = lambda t : (t, 10 + 300 - np.abs(t - 300) + 310 - 10)
         self.path["7"] = lambda t : (t, 10 - 300 + np.abs(t - 300) + 310 - 10)
+        self.path["8"] = lambda t : (t, 10 + 250 * (t / 720) * np.sin(np.deg2rad(t)) + 310 - 10)
+        self.path["9"] = lambda t : (t, 10 + 250 * (t / 720) * np.cos(np.deg2rad(t + 90)) + 310 - 10)
+        self.path["10"] = lambda t : (t, 10 + 250 * ((720 - t) / 720) * np.sin(np.deg2rad(t)) + 310 - 10)
+        self.path["11"] = lambda t : (t, 10 + 250 * ((720 - t) / 720) * np.cos(np.deg2rad(t + 90)) + 310 - 10)
+        self.path["12"] = lambda t : (t, 10 + 310 - 10)
+        self.path["13"] = lambda t : (t, 10 + 310 - 280 - 10)
+        self.path["14"] = lambda t : (t, 10 + 310 + 280 - 10)
+        self.path["15"] = lambda t : (t, 10 + 310 - 70 - 10)
+        self.path["16"] = lambda t : (t, 10 + 310 + 70 - 10)
+        self.path["17"] = lambda t : (t, 10 + 310 - 140 - 10)
+        self.path["18"] = lambda t : (t, 10 + 310 + 140 - 10)
+        self.path["19"] = lambda t : (t, 10 + 310 - 210 - 10)
+        self.path["20"] = lambda t : (t, 10 + 310 + 210 - 10)
         
         self.enemy_position = []
         self.enemies_position_in_t = []
         self.number_path = np.array([])
         
-    def deploy_enemies(self, type_enemy, type_swarm):
+    def deploy_enemies(self, type_enemy, type_swarm, number_of_enemy):
         """
         Deploy enemy's swarm or create initial position of enemies
 
@@ -177,7 +190,7 @@ class Enemy:
             type_enemy (int): type of enemy's texture
             type_swarm (int): type of enemy's swarm
         """
-        self.enemy_position_in_t = np.arange(0, -301, -30)
+        self.enemy_position_in_t = np.arange(0, -401, -(400 // number_of_enemy))
         self.current_enemy_texture = np.copy(self.enemy_texture["type" + str(type_enemy)])
         
         if type_swarm == 1:
@@ -189,6 +202,17 @@ class Enemy:
         elif type_swarm == 3:
             self.enemies_position_in_t = [np.copy(self.enemy_position_in_t), np.copy(self.enemy_position_in_t)]
             self.number_path = np.array([6,7])
+        elif type_swarm == 4:
+            self.enemies_position_in_t = [np.copy(self.enemy_position_in_t), np.copy(self.enemy_position_in_t)]
+            self.number_path = np.array([8,9])
+        elif type_swarm == 5:
+            self.enemies_position_in_t = [np.copy(self.enemy_position_in_t), np.copy(self.enemy_position_in_t)]
+            self.number_path = np.array([10,11])
+        elif type_swarm == 6:
+            self.enemies_position_in_t = [np.arange(0, -161, -40), np.arange(0, -161, -40), np.arange(0, -161, -40), 
+                                          np.arange(0, -161, -40), np.arange(0, -161, -40), np.arange(0, -161, -40),
+                                          np.arange(0, -161, -40), np.arange(0, -161, -40), np.arange(0, -161, -40)]
+            self.number_path = np.array([12,13,14,15,16,17,18,19,20])
             
     def update_enemies_position(self, step = 5):
         """

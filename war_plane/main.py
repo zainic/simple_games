@@ -122,9 +122,10 @@ def main():
         enemies_alive = np.sum([len(enemies) for enemies in enemy.enemies_position_in_t])
         if enemies_alive == 0:
             type_enemy = np.random.randint(1,4)
-            type_swarm = np.random.randint(1,4)
+            type_swarm = np.random.randint(1,7)
             speed_step = np.random.randint(2,5)
-            enemy.deploy_enemies(type_enemy, type_swarm)
+            number_of_enemy = np.random.randint(10,21)
+            enemy.deploy_enemies(type_enemy, type_swarm, number_of_enemy)
         else:
             enemy.update_enemies_position(step = speed_step)
         
