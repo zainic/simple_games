@@ -235,7 +235,8 @@ def create_main_menu_frame(background):
     part_logo_overlay = cv2.addWeighted(part_logo, 1, logo, 1, 0)
     frame[position[0] : position[0] + logo.shape[0], position[1] : position[1] + logo.shape[1]] = part_logo_overlay
     
-    frame = put_text_in_the_middle(frame, "Press space to START the game", size=1,  size_stroke=2, add_height=100)
+    frame = put_text_in_the_middle(frame, "Press space to START the game", size=1,  size_stroke=2, add_height=120)
+    frame = put_text_in_the_middle(frame, "Created by : zainic", size=1,  size_stroke=1, add_height=80)
     
     return frame
 

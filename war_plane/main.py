@@ -81,6 +81,7 @@ def main():
         showed_frame = np.copy(frame[20:REAL_WINDOW_HEIGHT + 20, 10:REAL_WINDOW_WIDTH + 10])
         
         cv2.putText(showed_frame, "score : " + str(background.score), (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 1, cv2.LINE_AA)
+        cv2.putText(showed_frame, "Created by : zainic", (REAL_WINDOW_WIDTH - 170, REAL_WINDOW_HEIGHT - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255), 1, cv2.LINE_AA)
         
         if ship.hit:
             put_text_in_the_middle(showed_frame, "GAME OVER", size=2, size_stroke=2)
