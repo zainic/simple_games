@@ -9,6 +9,21 @@ from object import *
 from pynput import keyboard
 
 def put_text_in_the_middle(frame, text = "Sample Text", size = 1, size_stroke=1, style = cv2.FONT_HERSHEY_SIMPLEX, line = cv2.LINE_AA, add_height=0):
+    """
+    Place text in the middle of screen as default
+
+    Args:
+        frame (ndarray): image that want to be overlayed by text
+        text (str, optional): Text. Defaults to "Sample Text".
+        size (int, optional): size of text. Defaults to 1.
+        size_stroke (int, optional): size stroke of text. Defaults to 1.
+        style (any, optional): font style. Defaults to cv2.FONT_HERSHEY_SIMPLEX.
+        line (ant, optional): line style. Defaults to cv2.LINE_AA.
+        add_height (int, optional): control the height with middle as origin. Defaults to 0.
+
+    Returns:
+        ndarray: image with the text in it
+    """
     text_width, text_height = cv2.getTextSize(text, style, size, line)[0]
     CenterCoordinates = (frame.shape[1] // 2 - text_width // 2 ,
                          frame.shape[0] // 2 + text_height // 2 + int(add_height))
@@ -138,6 +153,7 @@ def create_frame(background, ship, enemy, effect):
                             flatten_enemy_coords_cropped = np.delete(flatten_enemy_coords, np.argwhere(flatten_enemy_coords == np.array((-1,-1), dtype="i,i")))
                             if check_intersection(flatten_bullet_coords_cropped, flatten_enemy_coords_cropped):
                                 deleted_bullet.append(j)
+                                background.score += 1
                                 hit = True
                                 break
                         except Exception as e:

@@ -34,6 +34,7 @@ class Background:
         self.background = self.full_background[:WINDOW_HEIGHT, :]
         self.coordinate = np.array([[tuple((i,j)) for i in range(WINDOW_WIDTH)] for j in range(WINDOW_HEIGHT)], dtype='i,i')
         self.i = int(0)
+        self.score = 0
         
     def move_background(self, step):
         """
