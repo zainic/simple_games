@@ -31,7 +31,7 @@ def main():
     START = False
     
     delay_shoot = 10
-    delay_start = 30
+    delay_start = 100
     
     mixer.init()
     mixer.music.load(os.path.join(".","sound","menu_music.mp3"))
@@ -92,7 +92,7 @@ def main():
                 ship = Ship()
                 enemy = Enemy()
                 effect = Effect()
-                delay_start = 30
+                delay_start = 100
 
         ed = time.time()
         if ed - st <= 1/60:
@@ -109,7 +109,7 @@ def main():
         
         direction = get_direction_from_keys(pressed_keys)
         
-        if is_shooting(pressed_keys) and delay_shoot <= 0:
+        if is_shooting(pressed_keys) and delay_shoot <= 0 and not ship.hit:
             ship.shoot_bullet()
             mixer.Sound.play(ship_shoot)
             delay_shoot = 15
