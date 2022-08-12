@@ -34,10 +34,10 @@ def main():
     delay_start = 100
     
     mixer.init()
-    mixer.music.load(os.path.join(".","sound","menu_music.mp3"))
+    mixer.music.load(os.path.join(".","sound","menu_music.wav"))
     mixer.music.play(-1)
     
-    ship_shoot = mixer.Sound(os.path.join(".","sound","ship_shoot.mp3"))
+    ship_shoot = mixer.Sound(os.path.join(".","sound","ship_shoot.wav"))
     
     st = time.time()
     
@@ -66,7 +66,7 @@ def main():
         START = get_start_status(pressed_keys)
         EXIT = get_exit_status(key)
     
-    mixer.music.load(os.path.join(".","sound","play_music.mp3"))
+    mixer.music.load(os.path.join(".","sound","play_music.wav"))
     mixer.music.play(-1)
     
     while not EXIT:
