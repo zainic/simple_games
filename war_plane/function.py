@@ -10,8 +10,8 @@ from pynput import keyboard
 from pygame import mixer
 
 mixer.init()
-enemy_destroyed = mixer.Sound(os.path.join(".","sound","enemy_explode.mp3"))
-ship_explode = mixer.Sound(os.path.join(".","sound","ship_explode.mp3"))
+enemy_destroyed = mixer.Sound(os.path.join(".","sound","enemy_explode.wav"))
+ship_explode = mixer.Sound(os.path.join(".","sound","ship_explode.wav"))
 
 def put_text_in_the_middle(frame, text = "Sample Text", size = 1, size_stroke=1, style = cv2.FONT_HERSHEY_SIMPLEX, line = cv2.LINE_AA, add_height=0):
     """
